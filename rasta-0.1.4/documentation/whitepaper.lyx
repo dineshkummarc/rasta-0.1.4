@@ -1,0 +1,351 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass article
+\language american
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+The RASTA Framework
+\layout Author
+
+Joel Becker
+\layout Date
+
+October 3, 2001
+\layout Abstract
+
+RASTA is an framework for describing tasks on a computer system.
+ It is well known that casual and non-expert users prefer to be guided through
+ tasks rather than trying to learn and understand a complex and often esoteric
+ system.
+ This has lead to the common paradigms of the 
+\begin_inset Quotes eld
+\end_inset 
+
+Wizard
+\begin_inset Quotes erd
+\end_inset 
+
+ and the 
+\begin_inset Quotes eld
+\end_inset 
+
+Properties Dialog
+\begin_inset Quotes erd
+\end_inset 
+
+ in current computer software.
+ A wizard takes the user step by step through a task, asking pointed questions
+ along the way.
+ When the user has answered these questions, the proper action is taken.
+ This reduces the chance for error, and allows the user to have a more satisfact
+ory experience.
+ The property dialog is similar, though it often has merely one or two steps,
+ preferring to ask all the questions at once.
+ Each approach has its merits in certain contexts.
+ The RASTA framework takes the job of displaying wizards and dialogs out
+ of the hands of the application programmer.
+ The designer of a RASTA setup creates a description of the tasks and questions,
+ and the RASTA system uses these descriptions to guide the user through
+ the tasks.
+\layout Section
+
+Introduction
+\layout Standard
+
+Menu driven applications guide a user through a series of steps to a final
+ goal.
+ This can take the form of a wizard, a dialog, or any combination thereof.
+ The user follows the guided path, and in the end the user's desired action
+ is completed.
+ The better defined a task is, the easier it is to handle all the appropriate
+ questions required of the user.
+\layout Standard
+
+While specific software can be written for the task, writing software for
+ every task soon becomes a time-sink.
+ A programmer has to spend time defining these dialogs and wizards in order
+ to expose the more complex underpinnings of a system to the user.
+ This takes development time and effort.
+ Diverse programming styles and conventions lead to inconsistent wizards
+ and dialogs, which can confuse the user, who sees differing behavior on
+ the same system.
+ This is especially noticeable in free software, where personal taste and
+ whim are the rule and centralized style convention is the exception.
+\layout Standard
+
+The more general the application framework, the easier it is to modify the
+ selection of tasks, the questions, and the resulting actions.
+ RASTA is designed to be the end result of such an exercise.
+ The library and application know nothing about any task, but take descriptions
+ and render the choices and questions for the user.
+ Maintenance of the task information requires no change to the RASTA application
+ and can even be deployed long after the RASTA application has been installed
+ and configured.
+\layout Standard
+
+RASTA is intended to fit any and all task that can be thought of.
+ In order to do this, a lot of thought has gone into the description capabilitie
+s.
+ It is a general solution, and so some questions may not fit perfectly,
+ but the intention is that all questions will be possible.
+ In this way, the system can be adapted to almost anything, from system
+ administration to data entry.
+\layout Section
+
+A Generic Solution
+\layout Standard
+
+There are many reasons a generic solution makes sense.
+ Ease of maintenance has already been touched upon.
+ The maintainer of the description files does not need to know the C programming
+ language, or any compiled language at all.
+ They merely update the description file to describe their tasks.
+\layout Standard
+
+The included front-end programs are intended to satisfy most requirements.
+ However, if a different front-end is required for some reason, the application
+ programmer can write one without having to worry about the description
+ file.
+ When complete, it will read the description file and behave identically
+ to the included front-ends.
+ This frees the application programmer from worrying about the description
+ methodology.
+ They merely have to follow the contract specified by the RASTA library
+ and fit their front-end to their specific need.
+\layout Standard
+
+There is a known disadvantage to the generic approach.
+ It is possible that an interaction with the user can be done in a prettier
+ or more elegant manner when written with the specific interaction in mind.
+ A generic solution cannot predict these situations, and merely provides
+ facilities that should cover the situation in a slightly less optimal manor.
+ What matters is that the generic solution can still acquire the required
+ information.
+\layout Standard
+
+The generic solution has advantages that outweigh this limitation for many
+ things.
+ A user that is used to the interface of a RASTA application already knows
+ how to use and navigate the system.
+ They can discover new tasks and complete them with ease.
+ A specific solution may have its own style and interface, and may present
+ a challenge to the user.
+ Multiple task domains can be coalesced into one RASTA description.
+ This gives the user a single starting point for all of the tasks.
+ The user merely navigates the task choices until they find the task they
+ want.
+\layout Section
+
+The RASTA Architecture
+\layout Standard
+
+RASTA is intended to be of interest to a wide variety of administrators
+ and users.
+ Different people have different philosophies on interaction with a computer
+ system.
+ The new user wants their hand held, but the experienced user often wants
+ the quickest path to completion.
+ RASTA tries to provide solutions for all parts of this spectrum.
+\layout Standard
+
+A user (of any experience level) interacts with RASTA via a front-end applicatio
+n.
+ This is an application that renders the choices and questions that the
+ description calls for, retrieves the user's responses, and then runs the
+ given task.
+ It informs the user of the outcome, and then is ready to start another
+ task.
+\layout Standard
+
+The initial RASTA implementation contains two front-ends.
+ The first, 
+\family typewriter 
+clrasta
+\family default 
+, is a command line implementation.
+ It runs in a terminal window and asks questions one by one.
+ The other, 
+\family typewriter 
+gtkrasta,
+\family default 
+ is a GUI implementation using the GTK+ widget set.
+ It is more complete, and is currently used in real working environments.
+\layout Standard
+
+The important thing here is that these front-ends share the same back-end
+ for reading and navigating the description.
+ This back-end is a shared library with a defined API.
+ This allows other application programmers to write front-ends utilizing
+ this API.
+ These new front-ends would then be able to work with the description in
+ a nearly identical fashion to the current ones.
+\layout Section
+
+The Description File
+\layout Standard
+
+The heart of RASTA's flexibility is the description file.
+ The description defines hierarchies of tasks that the user can navigate.
+ Once the user has selected a task, the described questions are asked, gathering
+ the information required to run the task.
+ Finally, the task is executed.
+\layout Standard
+
+The XML file format was chosen because the world is familiar with the HTML
+ and XML formats.
+ XML has become a de facto standard for textual interchange.
+ The goal of this system is to get an installation up quickly and easily,
+ not to force others to learn another new and obscure syntax.
+ There is already a prototype editor for the description format, but it
+ is not ready for real use.
+\layout Subsection
+
+Screens
+\layout Standard
+
+The fundamental unit of description is a screen.
+ The RASTA application displays a screen at a time.
+ The user passes from screen to screen until all the information required
+ has been acquired.
+ There are four types of screens, three of which the user sees.
+\layout Standard
+
+The first screen a user would likely see is a MENU screen.
+ The MENU screen presents a choice of tasks.
+ The choices may be specific tasks, or generic categories of tasks.
+ The user selects the appropriate path, and is taken to the next screen.
+ If the choice was a generic category of tasks, the user is presented with
+ another MENU screen displaying a more specific set of choices.
+ The user follows these choices until a specific task is selected.
+\layout Standard
+
+If a specific task requires more information to continue, the user is presented
+ with a DIALOG screen.
+ This screen asks the user one or more questions pertaining to the task.
+ The user answers, and then proceeds to the next screen.
+ There may be one DIALOG screen asking all of the relevant questions, or
+ there may be multiple DIALOG screens, each asking a subset of the questions,
+ ala a wizard.
+\layout Standard
+
+The ACTION screen executes the task with the given information.
+ The 
+\family typewriter 
+clrasta
+\family default 
+ and 
+\family typewriter 
+gtkrasta
+\family default 
+ front-ends display the output of the task, though this is a policy decision
+ of the application programmer.
+ The screen then displays the outcome of the task -- success or failure
+ -- and then waits for the user to continue.
+ The user can back up the path to make another selection, redo this task,
+ or exit.
+\layout Standard
+
+The fourth screen, the HIDDEN screen, is unseen by the user and exists to
+ perform verification and validation tasks for the description.
+\layout Subsection
+
+Paths
+\layout Standard
+
+Screens describe how each choice or question should be presented to the
+ user.
+ The path describes the order in which screens are traveled.
+ The choices of a MENU screen are merely the possible paths beneath it.
+ The path description is a separate entity so that screens can be reused
+ along different paths.
+ The description writer must make sure that a screen used along multiple
+ paths satisfies the needs of each path.
+ If this is the case, then maintenance of the paths becomes easier, as a
+ change to the screen definition changes all paths that use the screen.
+\layout Subsection
+
+External Scripts
+\layout Standard
+
+The descriptions require various interactions with the system.
+ Fundamentally, the description has to specify a task to execute.
+ This is not the only interaction required, however.
+ Tasks can be run repeatedly.
+ It is required that the system have the ability to pre-fill fields with
+ already given answers.
+ Consider a phone book system.
+ The user wants to update the phone number for their friend John.
+ The DIALOG screen appears, asking via a field what John's phone number
+ is.
+ If the system already has an old phone number, the field should contain
+ that number instead of being blank.
+ There needs to be a mechanism for the description to do this.
+ The mechanism needs to be generic as well.
+\layout Standard
+
+All external interaction is done through shell scripts.
+ This would presumably map to the scripting capabilities of Windows on that
+ platform.
+ The shell scripts in the description file allow substitution of already
+ known values from previous questions, and they may output text in a specific
+ format to pre-fill answers.
+ This allows the most flexibility for the designer of the descriptions.
+ They may merely execute application programs from these scripts, or they
+ may have complicated script logic.
+ Between the XML and the scripting capabilities, this framework should be
+ able to handle almost any situation.
+\layout Section
+
+Why RASTA
+\layout Standard
+
+When I originally conceived this application, it was in the context of a
+ system management tool.
+ I didn't know what to call it, so I spent some time thinking about it.
+ YAST (Yet Another System Tool) was relatively new at the time, so its ha-ha-onl
+y-serious name was already taken.
+ I could not think of anything sufficiently creative.
+ I wanted a name that 
+\emph on 
+wasn't
+\emph default 
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+System Tool
+\begin_inset Quotes erd
+\end_inset 
+
+, but was still descriptive.
+ I also knew that creative acronyms got annoying after a while.
+ Hence, the 
+\begin_inset Quotes eld
+\end_inset 
+
+Really Annoying System Tool Acronym
+\begin_inset Quotes erd
+\end_inset 
+
+, or RASTA.
+\the_end

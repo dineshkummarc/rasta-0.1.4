@@ -1,0 +1,70 @@
+
+This is RASTA, a library and utilities for template driven tasks.
+
+What does that mean?  Take a set of tasks, actions, things to do, what
+have you, and consider what is required to perform one of them.  A user
+must first select the specific task they are interested in.  Then the
+user may have to answer some questions.  Finally, the task can be
+executed.  A simple example would be "Adding a User to the System".
+The user must select this task from the list of tasks, answer the
+questions "What is the user name?", "What is the user's group", etc, and
+then set the task in motion.
+
+The majority of tasks of any sort fall into this pattern.  Whether
+managing users, providing a simple way to access information, or simply
+allowing a user to use certain resources, the format is similar.
+
+The normal way of handing this is to create a program that takes a
+specific task or set of tasks and build a custom application to handle
+that task set.  This involves writing and maintaining each separate
+application  This means separate debugging, divergent interfaces, and
+lots and lots of bit rot.
+
+RASTA starts from the basic assumption that these tasks follow the above
+format.  It defines a description file that allows the tasks, the
+input they need, and the ability to choose the right task into a
+program independent format.  The RASTA library knows how to read that
+format, and the various front ends know how to interact with the user.
+This creates two advantages.  First, the user using a command-line
+interface can interact with the exact same task setup that the user
+using a graphical interface can, and so on for each front end.  The
+actual task description is shared.  Second, no interface programming is
+required for a person wishing to design a set of tasks.  Provide a
+description, and a consistent, accurate view of the task is displayed
+to the user via the front end of their choice.
+
+This package contains the base librasta library as well as three
+front ends and a set of tools.
+
+The librasta/ directory contains the source for the library.  It
+provides a complete interface to the description files exported via
+the rasta.h header.
+
+The clrasta/ directory contains a very simple command-line front end.
+It provides all the functionality in a minimum of complexity.
+
+The gtkrasta/ directory contains a GTK+ front end.  It provides a
+friendlier interface to the non-command-line oriented.
+
+The cgirasta/ directory contains the start of a CGI front end.  This
+will allow an HTTP interface to description files.  This, of course,
+would require security conscious usage.  It is currently not complete.
+
+The tools/ subdirectory contains various tools for managing description
+files.  The rastaadd and rastadel tools are complete.  They allow
+dynamic addition and subtraction of tasks from an existing description
+file.  Imagine a description that contains tasks for network management.
+Do you provide tasks for managing SAMBA?  How do you know SAMBA is
+installed?  Instead of guessing, the SAMBA package can provide the
+description of SAMBA related tasks and use rastaadd to add this snippet
+to the existing description file.  The tools/ subdirectory also contains
+a prototype for rastaedit, a tool to create description files
+graphically.  rastaedit is not yet functional.
+
+The documentation/ directory contains various documentation, including
+the RASTA white paper and the description file tutorial/reference.  The
+Documentation on writing a front end is not yet written.
+
+The examples/ directory contains some example description files.
+
+The RASTA team.

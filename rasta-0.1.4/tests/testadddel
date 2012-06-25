@@ -1,0 +1,64 @@
+#!/bin/sh
+
+#
+# testadddel
+#
+# Test rastaadd and rastadel functionality
+#
+
+case "$0" in
+testadddel | ./testadddel)
+    ;;
+* )
+    echo "testadddel: You must run this test from the tests/ subdirectory" >&2
+    exit 1
+    ;;
+esac
+
+# Clean up old temporaries
+rm -f test.rasta test.rasta.n test.rasta.tmpl.n 2>/dev/null
+
+cp -f test.rasta.tmpl test.rasta 2>/dev/null
+if [ $? != 0 ]
+then
+    echo "testadddel: Unable to create temporary files for testing" >&2
+    exit 1
+fi
+
+echo "testadddel: Testing addition via rastaadd..."
+../tools/rastaadd --file test.rasta testadd.rasta
+if [ $? != 0 ]
+then
+    echo "testadddel: rastaadd failed"
+    exit 1
+else
+    echo "testadddel: rastaadd succeeded"
+fi
+
+echo "testadddel: Testing deletion via rastadel..."
+../tools/rastadel --file test.rasta testdel.rasta
+if [ $? != 0 ]
+then
+    echo "testadddel: rastadel failed"
+    exit 1
+else
+    echo "testadddel: rastadel succeeded"
+fi
+
+echo "testadddel: Verifying that result is equivalent to the original..."
+
+xmllint --valid --noblanks test.rasta.tmpl > test.rasta.tmpl.n
+xmllint --valid --noblanks test.rasta > test.rasta.n
+diff -q test.rasta.tmpl.n test.rasta.n 1>/dev/null 2>&1
+if [ $? != 0 ]
+then
+    echo "testadddel: Resulting files are not equivalent"
+    exit 1
+else
+    echo "testadddel: Files are equivalent"
+fi
+
+rm -f test.rasta test.rasta.tmpl.n test.rasta.n 2>/dev/null
+
+echo "testadddel: All tests successful"
+

@@ -1,0 +1,9623 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass article
+\language american
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+The RASTA Description File
+\layout Author
+
+Joel Becker
+\layout Date
+
+June 12, 2002
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Introduction
+\layout Standard
+
+This is a tutorial and reference for designing description files for the
+ RASTA framework.
+ This document should help implementers design XML descriptions of tasks
+ and task sets, allowing them to use RASTA within their environment.
+\layout Section
+
+Tutorial
+\layout Subsection
+
+Concepts
+\layout Standard
+
+There are a few fundamental concepts to the RASTA system that bear exploring
+ before you begin learning the format of the RASTA description file.
+ The knowledge of these concepts will make understanding RASTA easier in
+ the pages that follow.
+\layout Standard
+
+RASTA is essentially a system for managing tasks.
+ A task is something you would like to do, and RASTA is designed to make
+ it easy for you to accomplish the described task with a minimum of effort.
+\layout Standard
+
+We will start with a simple example.
+ You want to buy a lottery ticket.
+ This is a task, and an easily explainable one.
+ You go to the nearby lottery location and ask for a ticket.
+ However, it really isn't that simple.
+ Which type of lottery ticket? Do you want to select your numbers, or do
+ you want a computer to do it for you randomly?
+\layout Standard
+
+These separate into more distinct tasks.
+ Say that you want to buy a State Lottery ticket.
+ You want to have a chance at the big money.
+ We will ignore all the other types of lottery tickets for now.
+ Even when ignoring all other lotteries, you still have two tasks before
+ you.
+ The tasks are 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This is, then, a set of tasks that are related.
+ To RASTA, this is a menu.
+ You are given a choice of tasks, and you must select one.
+\layout Standard
+
+If you choose random numbers, everything is again easy.
+ The lottery machine prints out your ticket and you are done.
+ This is what RASTA calls an action.
+ It describes how to complete a task.
+ So far, so good.
+\layout Standard
+
+What happens if you want to select your own numbers? The lottery machine
+ is now at an impasse.
+ It doesn't know what your numbers are.
+ What can it do? It has to ask you.
+ An automated machine could present you with questions asking for each number.
+ This is what RASTA calls a dialog.
+ Once you have answered all the questions and told the lottery machine the
+ information it needs to know, it can now proceeed.
+ Again, it uses an action to complete the task.
+ This time, the action uses your numbers to print the lottery ticket.
+ This makes it a different action than the automatic numbers action.
+\layout Standard
+
+So far we have seen three concepts.
+ The first is a menu.
+ A menu is how RASTA presents a choice of tasks or task sets.
+ The 
+\begin_inset Quotes eld
+\end_inset 
+
+State Lottery
+\begin_inset Quotes erd
+\end_inset 
+
+ task set could easily be a choice on a parent menu.
+ This menu might collect the 
+\begin_inset Quotes eld
+\end_inset 
+
+State Lottery
+\begin_inset Quotes erd
+\end_inset 
+
+ task set as well as the 
+\begin_inset Quotes eld
+\end_inset 
+
+Scratch and Win
+\begin_inset Quotes erd
+\end_inset 
+
+ task set.
+\layout Standard
+
+A dialog is how RASTA asks you for information it cannot discover on its
+ own.
+ A dialog necessarily contains one or more questions for you to answer.
+ To RASTA, each question is called a field.
+ A dialog can have one or many fields.
+ The designer of a dialog can have three dialogs in succession with one
+ field each or one dialog with three fields on it.
+ Either way, the user is asked for all three pieces of information, allowing
+ the task to be completed successfully.
+\layout Standard
+
+An action is how RASTA completes a task.
+ It takes any input you have given to a dialog and any other information
+ it has found for itself and then lets you know how your task did.
+ Usually the task completes successfully.
+ However, as this is a computer, they may not always complete successfully.
+\layout Standard
+
+How does RASTA let the action know of the answers given in the dialogs?
+ The RASTA system keeps track of all the answers provided during dialogs
+ in a symbol table.
+ Each question has a symbol name associated with it.
+ When you answer the question, the answer is stored with a given symbol
+ name.
+ When the action is executed, it has access to these symbols.
+\layout Subsection
+
+Building a Description
+\layout Standard
+
+The RASTA description file is written in XML.
+ XML is an OK format for describing things, but especially well suited to
+ tree-like structures.
+ In addition, most everyone has a basic understanding of XML.
+ If you don't know XML, go read up on it and come back!
+\layout Subsubsection
+
+Basic XML Structure
+\layout Standard
+
+Every RASTA description file will have these basic XML constructs.
+ First, it will have an XML header and a document declaration:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<?xml version=
+\begin_inset Quotes erd
+\end_inset 
+
+1.0
+\begin_inset Quotes erd
+\end_inset 
+
+ ?>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<!DOCTYPE RASTA
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+SYSTEM 
+\begin_inset Quotes eld
+\end_inset 
+
+file:///build/test/rasta/rasta-0/rasta.dtd
+\begin_inset Quotes erd
+\end_inset 
+
+ >
+\layout Standard
+
+This tells the XML parser that the XML is standard with XMl 1.0, the document
+ is a RASTA document, and it needs to be evaluated against your rasta.dtd
+ file.
+ You will need to modify the URL for the local installation location of
+ the RASTA DTD file.
+\layout Standard
+
+Every RASTA description file is enclosed in the RASTA tag.
+ The tag signifies that this is a RASTA description file, and it also specifies
+ the version of the file by means of the XML namespace:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<RASTA xmlns=
+\begin_inset Quotes erd
+\end_inset 
+
+http://www.jlbec.org/rasta/rasta-0
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</RASTA>
+\layout Standard
+
+Recall that XML namespaces are labels, not necessarily existing locations.
+ While jlbec.org exits, it doesn't have a file 
+\family typewriter 
+\size footnotesize 
+/rasta/rasta-0
+\family default 
+\size default 
+.
+ What it signifies is that this is a RASTA file of version 0.
+ All RASTA parsers that understand the version should work with all description
+ files that specify it.
+ If the format of the description file ever changes, the namespace will
+ be updated as well.
+ This allows tracking of compatibility between the description file format
+ and the RASTA library.
+\layout Subsubsection
+
+Screens
+\layout Standard
+
+RASTA interacts with the user via the concept of screens.
+ A screen is a page of information and choices.
+ Think of each stage in the lottery example above.
+ The choice between the tasks 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ is a logical stopping point.
+ The system has to wait for the user to choose one of the two tasks.
+ This would be displayed by RASTA via a screen.
+ Specificaly, this would be a menu screen.
+ A menu screen is responsible for displaying a choice between related tasks
+ or task sets.
+ There are three other types of screens in the RASTA description file.
+\layout Standard
+
+The dialog screen displays questions to the user, providing the user the
+ ability to specify input to the task.
+ In the lottery example, a dialog screen was used to query the lottery numbers
+ for the 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ task.
+\layout Standard
+
+The third type of screen is the action screen.
+ The action screen is responsible for displaying the output and results
+ of a task as it is executing and when it is complete.
+ If the task allows for user interaction, that may take place in the action
+ screen as well.
+ Most tasks do not require interaction, and in fact should not.
+ Except in extreme cases, a RASTA description file should obtain all input
+ for a task via menu and dialog screens.
+\layout Standard
+
+The fourth screen type has not been mentioned until now.
+ It is a hidden screen.
+ Hidden screens are used to manage processing behind the scenes, such as
+ testing user input.
+ Hidden screens will be mentioned in more detail when we discuss initcommands.
+\layout Standard
+
+The screens of a description file are enclosed in the <SCREENS> tag
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<RASTA xmlns=
+\begin_inset Quotes erd
+\end_inset 
+
+http://www.jlbec.org/rasta/rasta=0
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</RASTA>
+\layout Standard
+
+Each screen has its own description.
+ The centralized location of screen definitions allows screens to be reused
+ and gives the RASTA library a convenient method of referencing them.
+\layout Subsubsection
+
+Describing the Lottery Menu
+\layout Standard
+
+The menu screen describing the lottery tasks is a simple one containing
+ only two choices: 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ However, the description is even simpler:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<MENUSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_menu
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</MENUSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</SCREENS>
+\layout Standard
+
+The first thing to notice is that there is no mention of the tasks to choose.
+ It's not missing, it really doesn't belong here.
+ This XML defines the screen, but screens can be reused in multiple places.
+ What defines the choices is the arangement of screens underneath the menu.
+ If you place two tasks underneath the menu, the menu then has two choices.
+\layout Standard
+
+The current section is defining screens, not their relationship to each
+ other.
+ Therefore, the menu does not have its relation to following screens (the
+ choices) defined here.
+ The relationship is defined in the paths section of the description file.
+ Paths are discussed later on in this tutorial.
+\layout Standard
+
+What about the attributes on the MENUSCREEN element? The TEXT attribute
+ is pretty obvious.
+ This is the text that describes the menu, and is in fact the title of the
+ menu screen.
+ The title 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket
+\begin_inset Quotes erd
+\end_inset 
+
+ is certainly an apt general description for the two tasks we are describing.
+\layout Standard
+
+The ID attribute uniquely identifies the screen.
+ No two screens can have the same ID attribute.
+ Later, when describing the paths in the description file, the ID will be
+ used to reference this screen.
+\layout Subsubsection
+
+The Automatic Ticket Action
+\layout Standard
+
+The easiest of our tasks is 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with random numbers.
+\begin_inset Quotes erd
+\end_inset 
+
+ There is no iteraction required with the user.
+ The action screen describing this task is likewise simple:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+auto_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+ TTY=
+\begin_inset Quotes erd
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+for i in 1 2 3 4 5 6
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+do
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+NUMBERS=
+\begin_inset Quotes erd
+\end_inset 
+
+$NUMBERS `random_number`
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+done
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+print_ticket $NUMBERS
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</SCREENS>
+\layout Standard
+
+Simple, right? The attributes involved here are usually pretty straightforward,
+ and often don't change from the defaults.
+\layout Standard
+
+The ID attribute is a unique screen identifier, just like in the MENUSCREEN
+ element.
+ The TEXT attribute signifies the title of this action.
+ Notice that it is 
+\emph on 
+exactly
+\emph default 
+ the text of the task in the menu.
+ The path description, examined later in the tutorial, defines how this
+ action is a child of the menu screen we just defined.
+ When the RASTA library sees that this is a child of the menu, it uses the
+ TEXT attribute to form the choice in the menu.
+ In this fashion, menus are defined by their children, and only the path
+ needs to be updated to reflect a change.
+\layout Standard
+
+The TTY attribute is also a hint to the front end.
+ It tells the frontend what to expect from the task command.
+ If the TTY attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+no
+\begin_inset Quotes erd
+\end_inset 
+
+, the task command is assumed to send no output at all to the standard output
+ and error streams.
+ If the TTY attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+, the task command is expected to output on the standard output and/or error
+ streams.
+ Note that in both cases, no interaction with the task via standard input
+ is possible.
+ If the task command is expecting to take input on standard input, the TTY
+ attribute is set to 
+\begin_inset Quotes eld
+\end_inset 
+
+self
+\begin_inset Quotes erd
+\end_inset 
+
+, signifying that the task command wishes to handle terminal interaction
+ itself.
+ This should be avoided at all costs.
+ Most tasks can have information queried in RASTA, not during the action.
+ The obvious exception is a task that requires a password.
+ There's not much you can do except let the user type the password.
+\layout Standard
+
+The ACTIONCOMMAND element specifies the actual command that will be run
+ to complete the task.
+ This command is a script in the content area of the element.
+ On UNIX-like systems, the command is a bourne shell script (/bin/sh).
+ It is a Windows Scripting script on Windows.
+\layout Standard
+
+The end result is that the script is executed.
+ The print_ticket command run by the shell obstensibly does the right thing
+ to create a ticket on the output device.
+ The user is ready for the lottery drawing!
+\layout Subsubsection
+
+Choosing Numbers
+\layout Standard
+
+If the user has opted to choose their own numbers, the description file
+ now has to provide a way for them to do so.
+ A dialog screen displays one or more questions to the user.
+ The basic XML for a dialog screen is simple:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DIALOGSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DIALOGSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</SCREENS>
+\layout Standard
+
+Like the MENUSCREEN element, the DIALOGSCREEN element has only the ID and
+ TEXT attributes.
+ Like our ACTIONSCREEN element above, the TEXT attribute not only titles
+ the dialog, it provides the menu option for the parent menu.
+ More on that later.
+\layout Standard
+
+Notice that this dialog screen still does not seem to have anything to do
+ with querying the user.
+ It needs to know what to ask.
+ This is where fields come in.
+ A field is an entity to ask a question to a user and recieve a response.
+ How a front end displays this is variable.
+ A text front end might ask the question and wait for a response, while
+ a graphical front end might display all the fields in a dialog screen as
+ a set of widgets.
+\layout Standard
+
+Every field has a name.
+ Because RASTA must keep track of the user's input, the user's answers are
+ associated with the name in a symbol table.
+ The field name is called a symbol name, and the user input is called the
+ symbol value.
+\layout Standard
+
+The most basic type of field is the entry field.
+ It accepts any text input from the user.
+ To query lottery numbers, the description might look like this:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<DIALOGSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+First number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_2
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Second number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_3
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Third number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_4
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Fourth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_5
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Fifth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_6
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Sixth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</DIALOGSCREEN>
+\layout Standard
+
+Field names must be unique within a dialog.
+ They can be reused in unrelated dialogs and in later dialogs that override
+ earlier ones.
+ Here, the symbols 
+\begin_inset Quotes eld
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ through 
+\begin_inset Quotes eld
+\end_inset 
+
+number_6
+\begin_inset Quotes erd
+\end_inset 
+
+ represent the values the user has input.
+ The TEXT attribute specifies the question that the user is being asked.
+ The front end will display each field's text and allow the user to provide
+ a response.
+ When the user is done with the dialog, the front end will associate the
+ symbol name and the symbol value for each field in a symbol table that
+ RASTA keeps track of.
+\layout Standard
+
+The REQUIRED attribute is relatively straighforward.
+ If true, the front end will not allow the user to continue to the next
+ screen until the field is filled out.
+ In the lottery example, obviously all of the numbers are required before
+ a ticket can be printed.
+ There are other circumstances where some fields do not need to be filled
+ out.
+ Often tasks have suitable defaults or can ignore certain inputs if they
+ are not specified.
+\layout Subsubsection
+
+The Chosen Numbers Action
+\layout Standard
+
+The description file must define a second action screen, one that works
+ with user supplied lottery numbers.
+ This means that the action command must be made aware of the user's input:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+chosen_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+ TTY=
+\begin_inset Quotes erd
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+CONFIRM=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+NUMBERS=
+\begin_inset Quotes erd
+\end_inset 
+
+#number_1# #number_2# #number_3# #number_4# #number_5# #number_6#
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+print_ticket $NUMBERS
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</SCREENS>
+\layout Standard
+
+Notice that the field names from the dialog screen are now inside the action
+ command.
+ They are surrounded by the 
+\begin_inset Quotes eld
+\end_inset 
+
+#
+\begin_inset Quotes erd
+\end_inset 
+
+ character to signify to RASTA that they do indeed refer to symbol names.
+ RASTA, before executing this command, will substitute the value of the
+ associated symbol in the place of the 
+\begin_inset Quotes eld
+\end_inset 
+
+#symbol_name#
+\begin_inset Quotes erd
+\end_inset 
+
+ entity.
+\layout Standard
+
+The ACTIONCOMMAND element now has a new attribute.
+ The ESCAPESTYLE attribute defines how the symbol value is placed in the
+ command.
+ Shell scripts have funny rules about special characters when they appear
+ in quotation marks.
+ The expectation is that a value substituted by RASTA should not be misinterpera
+ted by the shell as something fancy.
+ By specifying the escape style, the description file has control over this.
+ When the escape style is 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+, RASTA escapes all special characters such that if the value is substituted
+ inside double quotation marks, the shell will not interperate any of them.
+ If the escape style is 
+\begin_inset Quotes eld
+\end_inset 
+
+single
+\begin_inset Quotes erd
+\end_inset 
+
+, RASTA escapes the characters to behave properly when enclosed in single
+ quotes.
+ When the escape styl e is 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+, RASTA does nothing and substitutes the symbol value verbatim.
+ Here the symbols are substituted inside double quotation marks, so the
+ escape style is 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+There are a new attribute on the ACTIONSCREEN element as well.
+ The CONFIRM attribute signifies whether the front end should ask the user
+ for confirmation before executing the task.
+ This is important.
+ Imagine an action that deletes files or an action that submits billing
+ information.
+ You want to ask the user if they are sure they are ready for the task to
+ execute.
+\layout Subsubsection
+
+Paths
+\layout Standard
+
+The description file now has a defnition for each screen the user might
+ see.
+ However, there is still no connection between the screens.
+ Somehow the RASTA system has to know what order to navigate the screens.
+ This is where paths come in.
+\layout Standard
+
+A path is simply a description of what screen comes after another.
+ Why are paths separate from screen definitions? A screen can be reused
+ on multiple paths.
+ Imagine you have a screen to ask a user their name.
+ The screen description defines a title and a field with an entry.
+ If you have 10 tasks that require the user's name, you would have to have
+ this screen in 10 different places.
+ By keeping the screen definition separate, you only need to name the screen
+ on each of the 10 paths.
+\layout Standard
+
+The basic rules for paths are simple.
+ The job of a menu is to give the user a choice of paths, so the menu may
+ have multiple children.
+ Each child becomes a choice in the menu.
+ The children of a menu may be any mixture of other menus, dialogs, or actions.
+ An action may not have any children.
+ Actions are the executable portion of the task, and are the task's endpoint.
+ A dialog is a specific route along a task.
+ Dialogs may have either one dialog or one action as a child.
+ This allows flexibility in design.
+ A task may have 20 fields in one dialog or 4 fields in each of 5 dialogs.
+ How the questions are arranged is up to the designer.
+\layout Standard
+
+Paths are listed in the description file under the PATH element:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<RASTA xmlns=
+\begin_inset Quotes erd
+\end_inset 
+
+http://www.jlbec.org/rasta/rasta-0
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</RASTA>
+\layout Standard
+
+Every element in a path tree must reference a screen that exists in the
+ screen definitions.
+ Screens may be used on more than one branch of the path.
+\layout Subsubsection
+
+Lottery Path
+\layout Standard
+
+Here is the path for the lottery example:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<MENU NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_menu
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+auto_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DIALOG NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+chosen_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DIALOG>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</MENU>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</PATH>
+\layout Standard
+
+As stated earlier, the mere existance of the 
+\begin_inset Quotes eld
+\end_inset 
+
+auto_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ screens as children of the 
+\begin_inset Quotes eld
+\end_inset 
+
+lottery_menu
+\begin_inset Quotes erd
+\end_inset 
+
+ screen provide the menu choices for the lottery menu.
+ If we added another screen as a child of the lottery menu, it too would
+ become a menu choice.
+\layout Standard
+
+If the user chooses the automatic ticket option from the lottery menu, the
+ action is immediately run.
+ However, if the user chooses to enter their own numbers, they are shown
+ the dialog that allows them to enter their lottery choices.
+ Once they have filled out that dialog, they can then proceed to the action
+ that prints a ticket using the input.
+ Now they have a ticket in hand, and good luck to them!
+\layout Subsubsection
+
+Complete Example
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<?xml version=
+\begin_inset Quotes erd
+\end_inset 
+
+1.0
+\begin_inset Quotes erd
+\end_inset 
+
+ ?>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<!DOCTYPE RASTA
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+SYSTEM 
+\begin_inset Quotes eld
+\end_inset 
+
+file:///usr/share/rasta/rasta-0/rasta.dtd
+\begin_inset Quotes erd
+\end_inset 
+
+ >
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<RASTA xmlns=
+\begin_inset Quotes erd
+\end_inset 
+
+http://www.jlbec.org/rasta/rasta-0
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<MENUSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_menu
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</MENUSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DIALOGSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+First number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_2
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Second number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_3
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Third number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_4
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Fourth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_5
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Fifth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_6
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Sixth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DIALOGSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+auto_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+ TTY=
+\begin_inset Quotes erd
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+for i in 1 2 3 4 5 6
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+do
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+NUMBERS=
+\begin_inset Quotes erd
+\end_inset 
+
+$NUMBERS `random_number`
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+done
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+print_ticket $NUMBERS
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+chosen_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+ TTY=
+\begin_inset Quotes erd
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+CONFIRM=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with random numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTIONCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+NUMBERS=
+\begin_inset Quotes erd
+\end_inset 
+
+#number_1# #number_2# #number_3# #number_4# #number_5# #number_6#
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+print_ticket $NUMBERS
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</ACTIONSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<MENU NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_menu
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+auto_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DIALOG NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+chosen_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DIALOG>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</MENU>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</RASTA>
+\layout Subsection
+
+Advanced Descriptions
+\layout Standard
+
+The simple example shows the basics of what RASTA can do.
+ A lot of tasks can be described with the description file capabilities
+ discussed so far.
+ There are many more things RASTA can do.
+ The following sections describe them.
+\layout Standard
+
+Remember, every description file tag and its meaning are in the reference
+ section.
+\layout Subsubsection
+
+Filling Initial Values
+\layout Standard
+
+In the lottery example, there was a task 
+\begin_inset Quotes eld
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers.
+\begin_inset Quotes erd
+\end_inset 
+
+ This task allowed the user to enter the six lottery numbers they wished
+ to pick.
+ The task would then print a lottery ticket.
+\layout Standard
+
+The description defined a dialog screen to ask the user for their numbers.
+ On the screen, six entry fields were provided.
+ They were empty to before the user types in any input.
+ However, a lottery application might wish to fill these fields in with
+ preset numbers.
+ For instance, maybe the application might place random numbers in the fields
+ so that the user can start from a set of numbers and only modify a few.
+\layout Standard
+
+RASTA provides the ability to do this with the INITCOMMAND tag.
+ If a dialog description has an initcommand, that command will be run by
+ the front end before the dialog is displayed.
+ The lottery dialog might look like this:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<DIALOGSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<INITCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+cat <<EOF
+\layout Quotation
+
+number_1
+\layout Quotation
+
+1
+\layout Quotation
+
+number_2
+\layout Quotation
+
+2
+\layout Quotation
+
+number_3
+\layout Quotation
+
+3
+\layout Quotation
+
+number_4
+\layout Quotation
+
+4
+\layout Quotation
+
+number_5
+\layout Quotation
+
+5
+\layout Quotation
+
+number_6
+\layout Quotation
+
+6
+\layout Quotation
+
+EOF
+\layout Quotation
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</INITCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+First number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_2
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Second number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_3
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Third number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_4
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Fourth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_5
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Fifth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_6
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Sixth number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</DIALOGSCREEN>
+\layout Standard
+
+Note that the initcommand has the ESCAPESTYLE attribute like action commands.
+ If this dialog were in the middle of a string of dialogs, the initcommand
+ could use any symbols that a previous dialog had defined.
+\layout Standard
+
+If the initcommand exits with a successful return code, the standard output
+ of the initcommand is taken to fill symbol values.
+ The output is as simple line-by-line format.
+ The first line is a symbol name.
+ The next line is that symbol's value.
+ Then the third line is another name, the fourth another value, and so on.
+ In the example above, the output is explicitly setting number_1=1, number_2=2,
+ and so on.
+\layout Standard
+
+Note that the deliniation is on a line boundary.
+ If the symbol value has newlines in it, embed them as '
+\backslash 
+n' as per the C language.
+ the backslash is escaped as '
+\backslash 
+
+\backslash 
+'.
+\layout Standard
+
+If the initcommand exits with an unsuccessful return code, the front end
+ will refuse to continue to the next screen and will instead go back to
+ the screen it just left.
+ The front end may or may not choose to display an error value.
+ Some front ends use the standard error output of the initcommand as an
+ error message.
+\layout Standard
+
+This initcommand doesn't do much.
+ However, a lot more might be done in a description file that handles account
+ management.
+ Imagine there is a task 
+\begin_inset Quotes eld
+\end_inset 
+
+Modify an account's attributes
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ It would be really painful if the user had to enter every attribute every
+ time.
+ An initcommand allows the RASTA description to query the current account
+ attributes and pre-fill fields.
+ Here, an initial dialog would query the account name to modify.
+ It would then give way to the attribute dialog.
+ The attribute dialog would have an initcommand that took the name and queried
+ the account database to fill the attribute fields.
+ If the account name did not exist, the initcommand could return nonzero
+ and print an error to that effect.
+\layout Subsubsection
+
+Hidden Screens
+\layout Standard
+
+There is a problem with the lottery example's number dialog.
+ What happens if the user enters 
+\begin_inset Quotes eld
+\end_inset 
+
+a
+\begin_inset Quotes erd
+\end_inset 
+
+ instead of 
+\begin_inset Quotes eld
+\end_inset 
+
+32
+\begin_inset Quotes erd
+\end_inset 
+
+ for a lottery number? As it currently stands, RASTA will go all the way
+ to running the task, and only then will the error be dicsovered.
+ The program that prints the lottery ticket will likely return an error.
+ The user will then have to back up to the number dialog to continue.
+\layout Standard
+
+This isn't the best user interface.
+ One should report a user's errors as soon as they occur, allowing the user
+ the easiest chance to fix them.
+ We've already discovered how an initcommand can do value checking, but
+ in this example there is no dialog following the number dialog, and so
+ there is no initcommand to check the input.
+\layout Standard
+
+This is where hidden screens come in.
+ A hidden screen is a screen that does not have a visual representation.
+ They merely contain an initcommand.
+ If the initcommand is successful, RASTA continues to the next screen.
+ If not, RASTA backs up to the previous screen just like when a dialog screen
+ has an initcommand.
+ Hidden screens can be used any place in the path tree that a dialog screen
+ can, That is, they can be the child of a menu, dialog, or hidden screen,
+ and can have a dialog, hidden, or action screen as their child.
+\layout Standard
+
+The initcommand in a hidden screen is exactly like the initcommand in a
+ dialog screen.
+ It can fill values with the same line-oriented protocol.
+ This can often be useful to pre-fill symbol values before any dialog has
+ even been seen.
+ Another possibility is to place a hidden screen between the menu that chooses
+ the task and the first dialog of the task.
+ This hidden screen would check if the current user has permission to run
+ that task.
+\layout Standard
+
+For the lottery example, a hidden screen might look like this:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<HIDDENSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+check_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Checking Numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<INITCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+for i in 
+\begin_inset Quotes eld
+\end_inset 
+
+#number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+#number_2#
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+#number_3#
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+#number_4#
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+#number_5#
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+#number_6
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+do
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+if not_number 
+\begin_inset Quotes eld
+\end_inset 
+
+$i
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+then
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+echo 
+\begin_inset Quotes eld
+\end_inset 
+
+Not a number: $i!
+\begin_inset Quotes erd
+\end_inset 
+
+ &gt;&amp;2
+\layout Quotation
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+exit 1
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+fi
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+done
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</INITCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</HIDDENSCREEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</SCREENS>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DIALOG ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<HIDDEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+check_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION ID=
+\begin_inset Quotes erd
+\end_inset 
+
+chosen_ticket_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</HIDDEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DIALOG>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</PATH>
+\layout Standard
+
+Here, the hidden screen's initcommand merely verifies all numbers are really
+ numbers and only then will it succeed.
+ If a value is not a number, the initcommand will error and the front end
+ will likely display the error message.
+\layout Standard
+
+Recall the account management example in the previous section.
+ The first dialog queries the account name.
+ The next dialog uses an initcommand to verify the name is a valid account,
+ and then displays the account attributes for modification.
+ One could also use a hidden screen here.
+ The hidden screen would sit between the dialogs and do the verification
+ of the account name.
+ Once it had verified the account name, it would give way to the account
+ modification dialog screen.
+ The dialog screen would still use its initcommand to pre-fill the attribute
+ fields.
+\layout Standard
+
+Why use a hidden screen here? The second dialog's initcommand was doing
+ a fine job of verifying accounts already! The reason is that screens are
+ reusable.
+ There is only one dialog that modifies attributes, but there might be multiple
+ paths in the path tree that query account names.
+ for instance, a task to remove accounts has to ask the name as well.
+ You cannot place the attribute modification dialog screen in this path.
+ You aren't modifying attributes.
+ Instead, the remove account task reuses the account name dialog screen
+ and the verify account hidden screen before giving way to the removal action.
+ The path tree for this part might look like this:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<PATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DIALOG NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+get_account_name
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<HIDDEN NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+verify_account_name
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+remove_account
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</HIDDEN>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DIALOG>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</PATH>
+\layout Standard
+
+The hidden screen verifies the account name before letting the system try
+ to remove it.
+ Also note that this is a perfect time to use the CONFIRM attribute on the
+ action.
+\layout Subsubsection
+
+Numeric Entry Fields
+\layout Standard
+
+We've improved our user interface by providing a user with feedback right
+ after they make an error.
+ The astute interface designer will note that there is often still more
+ we can do.Why let a user enter a non-numeric value in the first place? If
+ the user can only enter numbers, the problem will never occur.
+\layout Standard
+
+RASTA entry fields contain a simple numeric constraint mechanism.
+ When defining an entry field, one can add the NUMERIC attribute.
+ When this attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, the front end knows not to allow any non-numeric characters in the field:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<DIALOGSCREEN ID=
+\begin_inset Quotes erd
+\end_inset 
+
+lottery_choose_numbers
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Purchase a lottery ticket with chosen numbers
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\emph on 
+\SpecialChar ~
+
+\emph default 
+NUMERIC=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+First Number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+...
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</DIALOGSCREEN>
+\layout Standard
+
+Now the rasta front end doesn't allow non-numeric characters.
+ However, there are lottery numbers and then there are other numbers.
+ Fourty-one is a valid lottery number in some States.
+ Two thousand usually isn't, and four point five is right out.
+\layout Standard
+
+RASTA provides a FORMAT attribute for numeric entry fields.
+ This format is not all-encompasing, but it is pretty flexible for restricting
+ input.
+ The number format deals with the number of digits in a number.
+ For example, the number 
+\begin_inset Quotes eld
+\end_inset 
+
+22.5
+\begin_inset Quotes erd
+\end_inset 
+
+ has two digits left of the decimal point and one digit to the right of
+ the decimal point.
+ The format syntax allows the description to specify the minimum and maximum
+ number of digits to the left and right of the decimal point.
+\layout Standard
+
+If you wished to restrict the numeric input to require two digits left of
+ the decimal point and one digit to the right (as with our number 22.5),
+ the format would be
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+NUMERIC=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ FORMAT=
+\begin_inset Quotes erd
+\end_inset 
+
+2,2.1,1
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Enter number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Standard
+
+In the format syntax, a period (
+\begin_inset Quotes eld
+\end_inset 
+
+.
+\begin_inset Quotes erd
+\end_inset 
+
+) represents the decimal point no matter what locale RASTA is running in.
+ This is a syntax.
+ The front end is free to display numbers in the proper locale.
+ The comma (
+\begin_inset Quotes eld
+\end_inset 
+
+,
+\begin_inset Quotes erd
+\end_inset 
+
+) represents a range separator.
+ The format above (
+\begin_inset Quotes eld
+\end_inset 
+
+2,2.1,1
+\begin_inset Quotes erd
+\end_inset 
+
+ ) states that there must be a minimum of two numbers and a maximum of two
+ numbers to the left of the decimal point.
+ The number 22.5 fits this format, but the number 2.5 does not.
+\layout Standard
+
+Each side of the decimal point has a limit.
+ In the above example, 
+\begin_inset Quotes eld
+\end_inset 
+
+2,2
+\begin_inset Quotes erd
+\end_inset 
+
+ is the limit for digits to the left of the decimal point.
+ A limit has the format of 
+\begin_inset Quotes eld
+\end_inset 
+
+minimum,maximum
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ A limit may specify only the minimum or the maximum, leaving the unspecified
+ portion to the default.
+ A format may only specify a limit for only one side of the decimal point,
+ leaving the other side to the default.
+ The maximum of 
+\begin_inset Quotes eld
+\end_inset 
+
+-1
+\begin_inset Quotes erd
+\end_inset 
+
+ signifies unlimited.
+\layout Itemize
+
+0,-1.0,0 The default.
+ It specifies 0 to -1 (unlimited) digits to the left of the decimal point
+ and no characters to the right are allowed.
+\layout Itemize
+
+1.0,0 The limit for the left side of the decimal point specifies no maximum;
+ the default maximum of -1 (unlimited) is assumed.
+ The left side has a minimum of 1 digit.
+\layout Itemize
+
+,1.0,0 The limit for the left side specifies no minimum.
+ The default minimum of 0 is assumed, and the maximum is 1.
+ The right side of the decimal point is still limited to zero characters.
+\layout Itemize
+
+1,9 The left side allows between 1 and 9 digits.
+ The right side of the decimal point, though unspecified, defaults to no
+ digits allowed.
+\layout Itemize
+
+.1,9 The left side is unspecified and defaults to 0 to -1 (unlimited) allowed
+ digits.
+ The right side must have between 1 and 9 digits.
+\layout Itemize
+
+,0.,2 The left side specifies a maximum of 0 digits.
+ The right side specifies a maximum of 2 digits.
+ This number format would describe the number of cents in a dollar, for
+ instance.
+\layout Standard
+
+The proper format for the lottery example would be:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+NUMERIC=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ FORMAT=
+\begin_inset Quotes erd
+\end_inset 
+
+0,2.0,0
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+First Number
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Standard
+
+This limit specifies any number with zero to two digits to the left of the
+ decimal point and no digits to the right.
+ Hence, any integer between zero and ninety-nine is valid.
+\layout Standard
+
+Lottery numbers are usually between zero and fourty-four or so.
+ What to do? You have to check your numbers in an initcommand or in the
+ action command.
+ RASTA is a general framework.
+ The number format allows a lot of input control, but a general framework
+ cannot solve every problem as well as it would like.
+ It must, however, allow the problem to be solved somehow, and RASTA allows
+ that via initcommands and the like.
+\layout Standard
+
+There is, however, a better solution.
+ That solution will be examined later in the 
+\begin_inset Quotes eld
+\end_inset 
+
+Ring Fields
+\begin_inset Quotes erd
+\end_inset 
+
+ section.
+\layout Subsubsection
+
+Text Entry Length
+\layout Standard
+
+A numeric entry field can restrict the range of numbers it allows.
+ What about a text entry? A text entry field can use the LENGTH attribute
+ to restrict the amount of text entered:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+account_name
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+LENGTH=
+\begin_inset Quotes erd
+\end_inset 
+
+8
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account Name
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Standard
+
+This field allows up to eight characters of text entry.
+ This would work well for account management systems that only allow eight
+ characters in an account name.
+ The user should not be allowed to enter fourteen characters if only eight
+ will be used.
+\layout Subsubsection
+
+Ring Fields
+\layout Standard
+
+Text and numeric entry is nice, but it certainly is tedious when the list
+ of choices can be known ahead of time.
+ The RASTA framework provides two ways to give the user a list of choices.
+ The simplest way is the ring dialog field.
+ A ring dialog field contains a list of choices and the text to represent
+ them.
+ When the front end displays the field to the user, the user is allowed
+ to select one of these choices:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+account_type
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+ring
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account Type
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Administrative account
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+admin
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+User account
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+user
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Guest account
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+guest
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+The ring value's text will be displayed in the list of choices that is presented
+ to the user.
+ The VALUE attribute specifies what actually is substituted into command
+ scripts.
+ The user should not have to see the text 
+\begin_inset Quotes eld
+\end_inset 
+
+admin
+\begin_inset Quotes erd
+\end_inset 
+
+, but the underlying scripts and programs might require that value.
+ The TEXT attribute provides a user-friendly appearance for the front end's
+ interface.
+ A more common example is the switches to a command.
+ Often a command will take a switch or argument such as 
+\begin_inset Quotes eld
+\end_inset 
+
+-y
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ A ring value of 
+\begin_inset Quotes eld
+\end_inset 
+
+-y
+\begin_inset Quotes erd
+\end_inset 
+
+ would be confusing to a user, but a ring value of 
+\begin_inset Quotes eld
+\end_inset 
+
+Yes
+\begin_inset Quotes erd
+\end_inset 
+
+ would not:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+fsck_questions
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+ring
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+TRUE
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+FSCK Questions
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Always answer yes
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+-y
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Always answer no
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+-n
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Prompt for each one
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+Sure enough, fsck now gets the correct option, and a user of this description
+ has no need to know what that option is.
+\layout Standard
+
+Recall the lottery numbers example.
+ Even with numeric dialog fields and their format restrictions, a perfect
+ representation of the lottery number range could not be specified.
+ With a ring dialog field, it can:
+\layout LyX-Code
+
+
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+number_1
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+ring
+\begin_inset Quotes erd
+\end_inset 
+
+ REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\size footnotesize 
+       TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+First Number
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout LyX-Code
+
+
+\size footnotesize 
+    <RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+1
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+1
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout LyX-Code
+
+
+\size footnotesize 
+    <RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+2
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+2
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout LyX-Code
+
+
+\size footnotesize 
+    ...
+\layout LyX-Code
+
+
+\size footnotesize 
+    <RINGVALUE TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+44
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+44
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout LyX-Code
+
+
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+Each field now provides the user with a direct choice of number.
+ No more typing.
+ This is a bit verbose on the description designer, but it is only done
+ once.
+ The user benefit is immeasurable.
+\layout Subsubsection
+
+List Fields
+\layout Standard
+
+The ring dialog field is a good mechanism for providing a preset list of
+ choices for a user.
+ When the choices are known in advance, the user does not have to type in
+ an answer; instead the user merely has to choose.
+\layout Standard
+
+There is one problem with ring dialog fields.
+ Some choices are not known at the time the description file is written.
+ An account management tool might have a task to remove an account.
+ The user would have to know the name of the account and type it accurately
+ if the input was an entry dialog field.
+ A ring dialog field would make it easier, as the user would only have to
+ select the account name.
+ However, accounts are added and deleted at will, so the description file
+ could never keep all the valid account names in a ring dialog field.
+ The answer is the list dialog field.
+\layout Standard
+
+The list dialog field is similar to the ring dialog field from a user perspectiv
+e.
+ However, in the description file the list dialog field does not contain
+ a list of choices.
+ Instead, it contains a list command.
+ The output of the list command becomes the choices in the list.
+ One choice per line:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+delete_name
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+TRUE
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account to delete
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<LISTCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+list_accounts
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</LISTCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+The command 
+\begin_inset Quotes eld
+\end_inset 
+
+list_accounts
+\begin_inset Quotes erd
+\end_inset 
+
+ is expected to output the names of the current accounts on the system,
+ one per line.
+ Each line is a choice in the list.
+ The ESCAPESTYLE attribute of the LISTCOMMAND element behaves exactly as
+ it does on the INITCOMMAND and ACTIONCOMMAND elements.
+\layout Standard
+
+What if the user wished to delete more than one account at one time? This
+ may not be safe, of course, but it is conceivable.
+ List dialog fields support the MULTIPLE attribute.
+ This attribute defaults to false, but when set allows multiple items to
+ be selected in a list.
+ This is not possible with a ring dialog field:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+delete_name
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+TRUE
+\begin_inset Quotes erd
+\end_inset 
+
+ MULTIPLE=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account to delete
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<LISTCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+list_accounts
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</LISTCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+When multiple choices are selected, they will be substituted with a whitespace
+ between them.
+ They will not be one per line.
+ So chosing three names will result in a value:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+delete_name=
+\begin_inset Quotes erd
+\end_inset 
+
+bob sue ted
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+not:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+delete_name=
+\begin_inset Quotes erd
+\end_inset 
+
+bob
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+sue
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+ted
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+This is important to remember when dealing with whitespace in scripts.
+\layout Standard
+
+There is one advantage the ring dialog field retains.
+ Ring values have a TEXT attribute to provide user friendly display of the
+ choices.
+ List dialog fields do not.
+ What list dialog fields do have is the SINGLECOLUMN attribute.
+ When the SINGLECOLUMN attribute is true, only the first whitespace delineated
+ column of a list item will actually be saved in the symbol value.
+ All text after the first column will be ignored by the symbol table, but
+ will be used by the front end when displaying to the user.
+ The list of accounts could then read:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+bob - Bob Jones
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+sue - Susan Jacobs
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+ted - Ted Jennings
+\layout Standard
+
+If all three users where selected, the resulting value would be:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+delete_name=
+\begin_inset Quotes erd
+\end_inset 
+
+bob sue ted
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+Only the first column of each choice was used.
+ The field definition would be:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+delete_name
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+TRUE
+\begin_inset Quotes erd
+\end_inset 
+
+ MULTIPLE=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+SINGLECOLUMN=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account to delete
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<LISTCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+list_accounts
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</LISTCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Subsubsection
+
+Entry List Fields
+\layout Standard
+
+In the previous example, the description used a list command to generate
+ a list of account names.
+ This allows the user to choose from a list of correct names instead of
+ requiring the user to remember the name and type it themselves.
+ Usually this is a benefit to the user.
+\layout Standard
+
+On the other hand, a system with 1000 account names becomes hard to navigate
+ with a list of accounts.
+ A user who does know the name they wish to specify would like to type it
+ rather than hunt the list of 1000 names.
+ RASTA provides the entry list dialog field for this eventuality:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+delete_name
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+TRUE
+\begin_inset Quotes erd
+\end_inset 
+
+ MULTIPLE=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+SINGLECOLUMN=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ LENGTH=
+\begin_inset Quotes erd
+\end_inset 
+
+8
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account to delete
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<LISTCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+list_accounts
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</LISTCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+Note that the entry list dialog field can take the attributes of the entry
+ dialog field and the list dialog field.
+ There can be numeric constrants for numeric entry, length constraints for
+ text entry, and list definitions for the list generated.
+\layout Standard
+
+Another use of the entry list would be in a configuration tool.
+ The user might choose an existing configuration from the list, or they
+ may add a new configuration by typing in a new configuration name.
+\layout Subsubsection
+
+File Selection Fields
+\layout Standard
+
+The file selection field is an entry field usually coupled with some mechanism
+ to select filenames interactively.
+ The method is up to the front end.
+ A textual front end might do nothing or may use filename completion of
+ some sort.
+ A graphical front end could use a button to open a file selection widget.
+ The file dialog field only differs from the entry field in providing this
+ hint to the front end.
+ In addition, the file dialog field does not support numeric entry restrictions
+ (the NUMERIC attribute and friends).
+ Not many filenames are only numbers.
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+upload_file
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+file
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+File to Upload
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Subsubsection
+
+Read Only Fields
+\layout Standard
+
+A read only dialog field provides a way to display the value of a symbol
+ without allowing the user to change it.
+ An account management tool might provide a task to modify the attributes
+ of an account.
+ The first dialog in this task would query the name of the account.
+ The following dialog would use an initcommand to prefill the current attributes
+ of the account and would provide dialog fields to edit these attributes.
+ It would be convenient to the user to provide a listing of the selected
+ account name, but the user cannot change the name in this dialog:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+account_name
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+readonly
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account Name
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Subsubsection
+
+Description Fields
+\layout Standard
+
+Often more description is necessary to guide the user.
+ Rasta provides a description dialog field.
+ This field is displayed without any regard to user entry.
+ The TEXT attribute of the description dialog field is the description that
+ is displayed:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+modify_account_description
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+description
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Use this screen to modify the attributes of this account
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Subsubsection
+
+Help Text
+\layout Standard
+
+Field names are short.
+ Menu choices, while longer, are not always long enough to provide all the
+ information an unfamiliar user requires to successfully navigate the tasks.
+ Help text provides this functionality.
+\layout Standard
+
+All screen types and dialog fields can take a HELP element as their first
+ child.
+ When the a menu or dialog is displayed, the front end provides the ability
+ to query the help for each menu item or dialog field.
+ A dialog field for a new account name might have the following help:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+account_name
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ LENGTH=
+\begin_inset Quotes erd
+\end_inset 
+
+8
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Account Name
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<HELP>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+Enter the name of the new account here.
+ This name must begin with a letter and contain only letters and numbers.
+ The name may have at most eight (8) characters.
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</HELP>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+The front end would provide a method to query this field's help.
+ When selected, the help text would be displayed for the user.
+\layout Subsubsection
+
+Output Encodings
+\layout Standard
+
+RASTA description files are always in the UTF-8 encoding.
+ The scripts RASTA executes are converted to the current locale before being
+ passed to the script interpreter.
+ The output of these scripts is almost always in the current locale as well,
+ and RASTA front ends convert this back to UTF-8 before using the results.
+\layout Standard
+
+However, there is are rare occasions where a script or command might output
+ text that is not in the current locale.
+ In this case, RASTA will get the conversion wrong, and garbage text or
+ an error will result.
+ The description file handles this with the OUTPUTENCODING attribute.
+ The OUTPUTENCODING attribute is valid on LISTCOMMAND, INITCOMMAND, and
+ ACTIONCOMMAND elements.
+ The default value of the OUTPUTENCODING attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+system
+\begin_inset Quotes erd
+\end_inset 
+
+, which merely means to use the current locale.
+ If specified, the RASTA system will use the OUTPUTENCODING attribute to
+ convert the output from the init, list, or action command to UTF-8 before
+ using it in the RASTA system.
+\layout Standard
+
+When might this matter? A description file on a system running in the en_US
+ locale might wish to display lines from a file generated in the ru_RU locale.
+ The en_US locale defaults to an encoding of ISO-8859-1, but the ru_RU locale
+ uses the KIO8-R encoding.
+ If the RASTA system tries to translate the Russian text to UTF-8 as if
+ it were encoded in ISO-8859-1, an error eill result.
+ By specifying an output encoding of KIO8-R, the RASTA system knows to translate
+ the text from KIO8-R.
+\layout Standard
+
+There is one case RASTA cannot handle by itself.
+ If the output of a command or script will be in multiple encodings, RASTA
+ cannot guess which parts.
+ The only answer is for the script itself to handle the encoding conversion
+ until the entire output is in one encoding.
+ RASTA can then convert using this single encoding.
+\layout Subsubsection
+
+Fast Paths
+\layout Standard
+
+The lottery example dealt only with the large prize lottery.
+ We intentionally ignored all the other lottery types for simplicity.
+ A real lottery system would likley have a menu hierarchy like so:
+\layout Quotation
+
+
+\size footnotesize 
+Lottery System
+\begin_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Print a Scratch and Win Ticket
+\layout Quotation
+
+
+\size footnotesize 
+Print a Pick Four Ticket
+\begin_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Print a Pick Four Ticket With Random Numbers
+\layout Quotation
+
+
+\size footnotesize 
+Print a Pick Four Ticket With Chosen Numbers
+\end_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Print a Big Money Ticket
+\begin_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Print a Big Money Ticket With Random Numbers
+\layout Quotation
+
+
+\size footnotesize 
+Print a Big Money Ticket With Chosen Numbers
+\end_deeper 
+\end_deeper 
+\layout Standard
+
+This list should be easily understood.
+ The last set of choices is in fact the description we've been working on
+ since the start of the tutorial.
+ One could, in fact, build a lottery ticket kiosk with such a description
+ file.
+ Anyone could then happily select their ticket and take their chance.
+\layout Standard
+
+What if you wanted a kiosk that only handled the Big Money tickets? The
+ easiest idea is to copy only the Big Money portions of the description
+ file into a new description file.
+ That new file would be exactly what we created in the earlier examples.
+ There are a few problems, of course.
+ If you change one description file, you have to remember to change the
+ other.
+ If you are doing something more complex than a lottery system, it may be
+ far more difficult to excise the right portions.
+\layout Standard
+
+RASTA provides a better solution.
+ RASTA provides a way to pre-choose some menu items.
+ This is known as a fast path.
+ A kiosk that only wished to provide Big Money tickets would use a fast
+ path to pre-select the 
+\begin_inset Quotes eld
+\end_inset 
+
+Print a Big Money Ticket
+\begin_inset Quotes erd
+\end_inset 
+
+ menu item.
+ The first screen a user sees would be that menu, with the 
+\begin_inset Quotes eld
+\end_inset 
+
+Random
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+Chosen
+\begin_inset Quotes erd
+\end_inset 
+
+ options.
+\layout Standard
+
+How does one tell the front end what fast path to choose? The front ends
+ distributed with RASTA accept the screen name as the fast path on the command
+ line.
+ Other front ends might do it differently.
+\layout Standard
+
+Not all screens can be accessed with a fast path.
+ One could not jump straight to the action screen for 
+\begin_inset Quotes eld
+\end_inset 
+
+Chosen Numbers
+\begin_inset Quotes erd
+\end_inset 
+
+, as the numbers need to be selected first.
+ The FASTPATH attribute defines this relationship.
+ The FASTPATH attribute can exist on any MENUSCREEN, DIALOGSCREEN, or ACTIONSCRE
+EN.
+ It defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+true,
+\begin_inset Quotes erd
+\end_inset 
+
+ meaning the screen can be accessed via a fast path.
+ When a screen cannot be skipped, the FASTPATH attribute should be set to
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+false.
+\begin_inset Quotes erd
+\end_inset 
+
+ The RASTA system will not allow the front end to skip the screen or any
+ beneath it.
+\layout Subsubsection
+
+Dynamic Paths
+\layout Standard
+
+Recall that the ring dialog field has one major limitation: all choices
+ must be known when the description file is created.
+ The list dialog field alliviates this problem with a dynamic set of choices.
+\layout Standard
+
+The same can be said of menu items.
+ The list of tasks to choose from and the paths to take to complete them
+ can be enumerated in menu items almost all of the time.
+ However, every once in a while this does not work.
+ The choice of path to complete a task depends on user input outside of
+ a menu choice.
+ In other words, input into a dialog field that is stored in the symbol
+ table.
+\layout Standard
+
+The RASTA description file provides the MULTIPATH element to allow this.
+ A lottery system requires a user to pay for their lottery ticket.
+ They can pay with credit card or with cash.
+ Each credit card requires the system to do something different.
+ The menu hierarchy might look like this:
+\layout Quotation
+
+
+\size footnotesize 
+Purchase a Big Money Ticket with Random Numbers
+\begin_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Purchase with a Credit Card
+\begin_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Purchase with Visa
+\layout Quotation
+
+
+\size footnotesize 
+Purchase with MasterCard
+\end_deeper 
+\layout Quotation
+
+
+\size footnotesize 
+Purchase with Cash
+\end_deeper 
+\layout Standard
+
+This is just for randomly chosen tickets.
+ The menu hierarchy is repeated for the user chosen path.
+ This is not a bad thing in and of itself.
+ It provides a clear line of choices for the user.
+ It may be a little more verbose to type, but the user is paramount.
+\layout Standard
+
+However, there is still a problem.
+ What happens if the lottery system wishes to add American Express? With
+ this method, each occurrence of the payment choices requires modification.
+\layout Standard
+
+A better solution is to place the type of credit card as a dialog field.
+ It can be a list dialog field, and the list command can merely output a
+ file containing the list of all valid credit cards:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<FIELD NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+credit_card
+\begin_inset Quotes erd
+\end_inset 
+
+ TYPE=
+\begin_inset Quotes erd
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+ REQUIRED=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+TEXT=
+\begin_inset Quotes erd
+\end_inset 
+
+Credit Card Type
+\begin_inset Quotes erd
+\end_inset 
+
+ SINGLECOLUMN=
+\begin_inset Quotes erd
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<LISTCOMMAND ESCAPESTYLE=
+\begin_inset Quotes erd
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+cat /usr/share/lottery/credit_types.txt
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</LISTCOMMAND>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</FIELD>
+\layout Standard
+
+After the user selects their card type, it would be stored in the symbol
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+credit card.
+\begin_inset Quotes erd
+\end_inset 
+
+ The description still has to follow a different path for each card type.
+ Here the MULTIPATH element comes into play:
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+<DIALOG NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+card_type
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<MULTIPATH SYMBOL=
+\begin_inset Quotes erd
+\end_inset 
+
+credit_card
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+visa
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+visa_card_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</MULTIPATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<MULTIPATH SYMBOL=
+\begin_inset Quotes erd
+\end_inset 
+
+credit_card
+\begin_inset Quotes erd
+\end_inset 
+
+ VALUE=
+\begin_inset Quotes erd
+\end_inset 
+
+mastercard
+\begin_inset Quotes erd
+\end_inset 
+
+>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+mastercard_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</MULTIPATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<DEFAULTPATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+<ACTION NAME=
+\begin_inset Quotes erd
+\end_inset 
+
+default_card_action
+\begin_inset Quotes erd
+\end_inset 
+
+/>
+\layout Quotation
+
+
+\family typewriter 
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+</DEFAULTPATH>
+\layout Quotation
+
+
+\family typewriter 
+\size footnotesize 
+</DIALOG>
+\layout Standard
+
+The MULTIPATH element works in sequential order.
+ The first MULTIPATH tag is examined.
+ If the symbol named has the matching value in the symbol table, the path
+ beneath the MULTIPATH will be followed.
+ If the symbol value does not match, the next MULTIPATH element will be
+ checked.
+ Finally, if a DEFAULTPATH element is found, the path underneath the DEFAULTPATH
+ element will be followed.
+ DEFAULTPATH elements are not required, but a description should be designed
+ so that at least one MULTIPATH or DEFAULTPATH element on the same level
+ of the same path will match.
+\layout Section
+
+Reference
+\layout Subsection
+
+Toplevel Elements
+\layout Subsubsection
+
+The PATH Element
+\layout Standard
+
+The PATH element is the parent for the path structure.
+ This structure defines the various ways that the system can navigate through
+ the screens.
+ The description file must contain definitions for all of the screens referenced
+ in the path structure.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Standard
+
+NONE
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The PATH element must have one and only one MENU or DIALOG element as its
+ child.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The PATH element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The PATHINSERT Element
+\layout Standard
+
+The PATHINSERT element defines a section of path to be added to the path
+ structure of the main description file.
+ Multiple PATHINSERT elements are allowed in an addition file.
+ The addition file must contain definitions for all of the screens that
+ are not in the main description file already.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+NAME
+\begin_deeper 
+\layout Standard
+
+The NAME attribute contains the tree of PATH elements that this addition
+ is to nest beneath.
+ Names are separated by a forward slash ('/').
+ For example, a tree contains the path 
+\begin_inset Quotes eld
+\end_inset 
+
+select_task_type -> select_backup_task
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The addition description wants to add a screen 
+\begin_inset Quotes eld
+\end_inset 
+
+restore_files
+\begin_inset Quotes erd
+\end_inset 
+
+ beneath that.
+ The NAME attribute on the PATHINSERT element would be 
+\begin_inset Quotes eld
+\end_inset 
+
+select_task_type/select_backup_task
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The PATHINSERT element may have any number of MENU, DIALOG, or ACTION children.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The PATHINSERT element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The RASTA Element
+\layout Standard
+
+The RASTA element is the toplevel element of a description file.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+xmlns
+\begin_deeper 
+\layout Standard
+
+This is the XML namespace for the document.
+ RASTA 1.0 description files have the namespace 
+\begin_inset Quotes eld
+\end_inset 
+
+http://www.jlbec.org/rasta/v1
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The RASTA element must have one SCREENS element.
+ A regular description file must also have exactly one PATH element.
+ A file specifying an addition to the descriptions must have more than zero
+ PATHINSERT elements.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The RASTA element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The SCREENS Element
+\layout Standard
+
+The SCREENS element is the parent for all screen definitions.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Standard
+
+NONE
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The SCREENS element may have any number of MENUSCREEN, DIALOGSCREEN, HIDDENSCREE
+N, and ACTIONSCREEN children.
+ It can, in fact, have no children at all, though this makes for a rather
+ useless description file.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The SCREENS element may not have any child text.
+\end_deeper 
+\layout Subsection
+
+Screen Definition Elements
+\layout Subsubsection
+
+The ACTIONCOMMAND Element
+\layout Standard
+
+The ACTIONCOMMAND element describes the actual action to be executed for
+ a given task.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ESCAPESTYLE
+\begin_deeper 
+\layout Standard
+
+The ESCAPESTYLE attribute specifies the quoting behavior of symbol substitution.
+ There are three possible values.
+ If set to 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+, substituted symbols are quoted with the expectation they are inside double
+ quotes.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+single
+\begin_inset Quotes erd
+\end_inset 
+
+, the expectation is to substitute the value inside single quotes.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+, no quoting occurs and the symbol's value is substituted verbatim.
+\layout Standard
+
+The default escape style is 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+OUTPUTENCODING
+\begin_deeper 
+\layout Standard
+
+This specifies the locale encoding of any output from the action.
+\layout Standard
+
+The default is 
+\begin_inset Quotes eld
+\end_inset 
+
+system
+\begin_inset Quotes erd
+\end_inset 
+
+, which tells the frontend to expect the system's default encoding.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The ACTIONCOMMAND element may not have any children.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The child text of an ACTIONCOMMAND is the script to run for this action.
+ This is Bourne Shell script text on Unix systems and Windows Scripting
+ text on Windows systems.
+ See the section describing scripts for rules regarding script capabilities.
+\end_deeper 
+\layout Subsubsection
+
+The ACTIONSCREEN Element
+\layout Standard
+
+The ACTIONSCREEN element describes the action to be executed for a given
+ task.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ID
+\begin_deeper 
+\layout Standard
+
+The ID is a unique name identifying this screen.
+ It may only contain letters and numbers.
+\end_deeper 
+\layout Itemize
+
+TEXT
+\begin_deeper 
+\layout Standard
+
+The TEXT attribute is the text description of this screen.
+ It will be used as the title of this screen when the screen is current.
+ It will also be used as the menu item for this screen in the menu above
+ it.
+\end_deeper 
+\layout Itemize
+
+TTY
+\begin_deeper 
+\layout Standard
+
+The TTY attribute specifies the input and output behavior of the action.
+ If set to 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+, the action is expected to produce output on standard out and/or standard
+ error.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+no
+\begin_inset Quotes erd
+\end_inset 
+
+, no output is expected, and any that occurs will be thrown away.
+ Both of these disallow any input to be read by the action.
+ If input or any other special terminal handling is required, the value
+ should be 
+\begin_inset Quotes eld
+\end_inset 
+
+self
+\begin_inset Quotes erd
+\end_inset 
+
+, to indicate that the action will handle its own input and output.
+ The action should be executed in an independant terminal window.
+ For example, in an X environment the action might be started in an Xterm.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+CONFIRM
+\begin_deeper 
+\layout Standard
+
+If set to 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, the front-end should confirm the user really wishes to proceed before
+ executing this action.
+ The action should be executed immediately if set to 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+The default value is 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The ACTIONSCREEN element may have zero or one HELP elements and is required
+ to have an ACTIONCOMMAND child.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The ACTIONSCREEN is not allowed to have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The DIALOGSCREEN Element
+\layout Standard
+
+The DIALOGSCREEN element defines a screen of questions to ask the user.
+ This screen can contain many questions or merely one.
+ Questions are asked in the form of fields, represented by FIELD elements.
+ If an INITCOMMAND child exists, it is run before displaying the screen.
+ This allows the system to load values for symbols.
+ These values can be used to pre-fill the fields before displaying them
+ to the user.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ID
+\begin_deeper 
+\layout Standard
+
+The ID is a unique name identifying this screen.
+ It may only contain letters and numbers.
+\end_deeper 
+\layout Itemize
+
+TEXT
+\begin_deeper 
+\layout Standard
+
+The TEXT attribute is the text description of this screen.
+ It will be used as the title of this screen when the screen is current.
+ It will also be used as the menu item for this screen in the menu above
+ it.
+\end_deeper 
+\layout Itemize
+
+FASTPATH
+\begin_deeper 
+\layout Standard
+
+The FASTPATH attribute is either 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ If true, a user can launch the RASTA application directly to this screen.
+ If false, the user cannot do so, nor can the user ever launch directly
+ to any screens below this one in the path structure.
+\layout Standard
+
+This attribute should be false on all screens that require information from
+ a previous screen.
+ Otherwise, if the user launches directly to this screen, the required previous
+ screen will be skipped and the information will not be there.
+\layout Standard
+
+The default value is 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The DIALOGSCREEN element may have zero or one HELP elements, zero or one
+ INITCOMMAND elements, and any number of FIELD elements as children.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The DIALOGSCREEN element is not allowed to have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The FIELD Element
+\layout Standard
+
+The FIELD element describes a field in a dialog.
+ It provides text for requesting the information from the user and some
+ type of widget to appropriately allow the user to answer.
+ This may merely be an entry box for simple queries or a file selection
+ dialog for files.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+NAME
+\begin_deeper 
+\layout Standard
+
+The name of the field.
+ This is also the name of the symbol that will correspond with this value.
+ The symbol may have been defined in an earlier screen, either via an INITCOMMAN
+D or user input.
+ If this is the case, the front-end should pre-fill the field with the already
+ known value for this symbol.
+ The creator of the description file should be careful about the lifetime
+ of the symbols defined.
+ 
+\end_deeper 
+\layout Itemize
+
+TEXT
+\begin_deeper 
+\layout Standard
+
+The text that will be displayed to the user next to the field.
+\end_deeper 
+\layout Itemize
+
+TYPE
+\begin_deeper 
+\layout Standard
+
+The field type specifies the behavior of the field.
+ Different entry requirements require different behaviors.
+ The types allowed should handle all general cases.
+ The various types are as follows:
+\layout Itemize
+
+readonly
+\begin_deeper 
+\layout Standard
+
+The TEXT and the value for the symbol NAME are displayed in a readonly fashion.
+\end_deeper 
+\layout Itemize
+
+description
+\begin_deeper 
+\layout Standard
+
+The TEXT of this field will be displayed for additional descriptive purposes.
+\end_deeper 
+\layout Itemize
+
+entry
+\begin_deeper 
+\layout Standard
+
+A space is provided for the user to type in the value.
+\end_deeper 
+\layout Itemize
+
+list
+\begin_deeper 
+\layout Standard
+
+The field has a LISTCOMMAND child.
+ When requested, the front-end will run the script in the LISTCOMMAND element.
+ The output from the script will become a list of choices for the user.
+ See the LISTCOMMAND element for more information.
+\end_deeper 
+\layout Itemize
+
+entrylist
+\begin_deeper 
+\layout Standard
+
+A combination of the 
+\begin_inset Quotes eld
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+ types, the 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+ type allows the user to type in a value or choose from the script generated
+ list.
+\end_deeper 
+\layout Itemize
+
+ring
+\begin_deeper 
+\layout Standard
+
+A list is created for the user to choose a value from.
+ Unlike the 
+\begin_inset Quotes eld
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+ type, the choices are not generated by a script, but are instead hardcoded
+ in the description file via RINGCOMMAND elements.
+ This type is useful for predetermined values.
+\end_deeper 
+\layout Itemize
+
+file
+\begin_deeper 
+\layout Standard
+
+The field should provide some way of entering a file name.
+ This can be via user input, a file dialog, or anything the front-end implemente
+r feels is appropriate.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+REQUIRED
+\begin_deeper 
+\layout Standard
+
+If 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, the field must have a value before the user can continue onto the next
+ screen.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+, this restriction does not apply.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+HIDDEN
+\begin_deeper 
+\layout Standard
+
+This attribute only applies to 
+\begin_inset Quotes eld
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ type fields.
+ If HIDDEN is 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, then text entered by the user will not be displayed.
+ This is useful for passwords and the like.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+NUMERIC
+\begin_deeper 
+\layout Standard
+
+This attribute only applies to 
+\begin_inset Quotes eld
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+ type fields.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, the field only accepts numeric input.
+ All numeric input is assumed to be arabic numerals.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+LENGTH
+\begin_deeper 
+\layout Standard
+
+This attribute only applies to 
+\begin_inset Quotes eld
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+ type fields where the attribute NUMERIC is 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ It specifies the maximum length of a value entered by the user.
+ If the LENGTH is 0, any amount of input is allowed.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+0
+\begin_inset Quotes erd
+\end_inset 
+
+ (any length allowed).
+\end_deeper 
+\layout Itemize
+
+FORMAT
+\begin_deeper 
+\layout Standard
+
+This attribute only applies to 
+\begin_inset Quotes eld
+\end_inset 
+
+entry
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+ type fields where the attribute NUMERIC is 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ It specifies the format of the number to be entered.
+ The format is specified as the limit of numbers before and after the decimal
+ point.
+ These limits are a range of numbers.
+\layout Standard
+
+Imagine an entry that wants a value between $1.00 and $999.99.
+ There is a range of one to three digits before the decimal point, and a
+ requirement of exactly two digits after the decimal point.
+ The FORMAT attribute would be specified as 
+\begin_inset Quotes eld
+\end_inset 
+
+1,3.2,2
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The left half, 
+\begin_inset Quotes eld
+\end_inset 
+
+1,3
+\begin_inset Quotes erd
+\end_inset 
+
+, specifies a minimum of one digit and a maximum of three digits to the
+ left of the decimal point.
+ The right half, 
+\begin_inset Quotes eld
+\end_inset 
+
+2,2
+\begin_inset Quotes erd
+\end_inset 
+
+, specifies a minimum and maximum of two digits, hence exactly two digits.
+\layout Standard
+
+The range value 
+\begin_inset Quotes eld
+\end_inset 
+
+-1
+\begin_inset Quotes erd
+\end_inset 
+
+ signifies any number of digits.
+ If the entry in our example was to allow an infinite amount of money to
+ be entered, the FORMAT attribute would be 
+\begin_inset Quotes eld
+\end_inset 
+
+1,-1.2,2
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+If only one number is given for a range, it is a minimum.
+ The FORMAT 
+\begin_inset Quotes eld
+\end_inset 
+
+8
+\begin_inset Quotes erd
+\end_inset 
+
+ is equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+8,-1
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ If there is a 
+\begin_inset Quotes eld
+\end_inset 
+
+,
+\begin_inset Quotes erd
+\end_inset 
+
+, it is a maximum.
+ The FORMAT 
+\begin_inset Quotes eld
+\end_inset 
+
+,8
+\begin_inset Quotes erd
+\end_inset 
+
+ is equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+0,8
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ If there is no 
+\begin_inset Quotes eld
+\end_inset 
+
+.
+\begin_inset Quotes erd
+\end_inset 
+
+, the range is applied to the left of the the decimal point.
+ If there is, it is applied to the right of the decimal point.
+ Ergo, 
+\begin_inset Quotes eld
+\end_inset 
+
+3,9
+\begin_inset Quotes erd
+\end_inset 
+
+ is equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+3,9.0,0
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+.3,9
+\begin_inset Quotes erd
+\end_inset 
+
+ is equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+0,-1.3,9
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The default value is 
+\begin_inset Quotes eld
+\end_inset 
+
+0,-1.0,0
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This means any amount of digits to the left of the decimal point and no
+ digits to the right, ie.
+ any Integer.
+\end_deeper 
+\layout Itemize
+
+MULTIPLE
+\begin_deeper 
+\layout Standard
+
+This attribute only applies to 
+\begin_inset Quotes eld
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+ type fields.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, the user may select more than one response from the list of choices.
+ These choices will be separated by spaces when placed into the symbol table.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+SINGLECOLUMN
+\begin_deeper 
+\layout Standard
+
+This attribute only applies to 
+\begin_inset Quotes eld
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+ type fields.
+ A LISTCOMMAND may generate list choices that have more than one word in
+ them.
+ If the SINGLECOLUMN attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+, only the first word (whitespace delineated) will be used in the resulting
+ value.
+ If it is 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+, the entire line will be used.
+\layout Standard
+
+This is useful to provide descriptive text next to choices.
+ Imagine an employee is selecting their job role.
+ The system uses the value 
+\begin_inset Quotes eld
+\end_inset 
+
+itspec
+\begin_inset Quotes erd
+\end_inset 
+
+ to mean I/T Specialist.
+ If the employee sees the choice 
+\begin_inset Quotes eld
+\end_inset 
+
+itspec
+\begin_inset Quotes erd
+\end_inset 
+
+, they will likely not know that this is the correct answer.
+ However, if the choice is 
+\begin_inset Quotes eld
+\end_inset 
+
+itspec - I/T Specialists and System Administrators
+\begin_inset Quotes erd
+\end_inset 
+
+, then the employee can see the proper choice.
+ The SINGLECOLUMN attribute assures that only the 
+\begin_inset Quotes eld
+\end_inset 
+
+itspec
+\begin_inset Quotes erd
+\end_inset 
+
+ portion of the choice is used.
+\layout Standard
+
+This attribute defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The FIELD element can have zero or one INITCOMMAND children, zero or one
+ HELP children, and any number of FIELD children.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The FIELD element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The HELP Element
+\layout Standard
+
+HELP elements appear throughout the description allowing detailed help to
+ be attached to all of the different structures.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Standard
+
+NONE
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The HELP element is not permitted to have any child elements.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The child text of a HELP element is the actual help text to be displayed
+ to the user when requested.
+\end_deeper 
+\layout Subsubsection
+
+The HIDDENSCREEN Element
+\layout Standard
+
+The HIDDENSCREEN element exists merely to run a 
+\begin_inset Quotes eld
+\end_inset 
+
+hidden
+\begin_inset Quotes erd
+\end_inset 
+
+ INITCOMMAND script.
+ This script can be used to validate some user input or to add more data
+ to the list of known symbols.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ID
+\begin_deeper 
+\layout Standard
+
+The ID is a unique name identifying this screen.
+ It may only contain letters and numbers.
+\end_deeper 
+\layout Itemize
+
+TEXT
+\begin_deeper 
+\layout Standard
+
+The TEXT attribute is the text description of this screen.
+ It will be used as the title of this screen when the screen is current.
+ It will also be used as the menu item for this screen in the menu above
+ it.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The HIDDENSCREEN element must have one and only one INITCOMMAND child.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The HIDDENSCREEN element is not permitted to have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The INITCOMMAND Element
+\layout Standard
+
+The INITCOMMAND element specifies a script to run to initialize symbol values
+ or perform other tasks.
+ The standard output of a successful INITCOMMAND is line-oriented.
+ The first line is the name of the symbol, the second line is the value.
+ This repeats for all the symbols for which the initcommand wishes to set
+ values.
+ If the INITCOMMAND exits non-zero, the standard output is ignored, and
+ any standard error output is used as an error message.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ESCAPESTYLE
+\begin_deeper 
+\layout Standard
+
+The ESCAPESTYLE attribute specifies the quoting behavior of symbol substitution.
+ There are three possible values.
+ If set to 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+, substituted symbols are quoted with the expectation they are inside double
+ quotes.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+single
+\begin_inset Quotes erd
+\end_inset 
+
+, the expectation is to substitute the value inside single quotes.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+, no quoting occurs and the symbol's value is substituted verbatim.
+\end_deeper 
+\layout Itemize
+
+OUTPUTENCODING
+\begin_deeper 
+\layout Standard
+
+This specifies the locale encoding of any output from the action.
+\layout Standard
+
+The default is 
+\begin_inset Quotes eld
+\end_inset 
+
+system
+\begin_inset Quotes erd
+\end_inset 
+
+, which tells the frontend to expect the system's default encoding.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The INITCOMMAND element may not have any child elements.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The child text is the script to run.
+ This is Bourne Shell script text on Unix systems and Windows Scripting
+ text on Windows systems.
+ See the section describing scripts for rules regarding script capabilities.
+\end_deeper 
+\layout Subsubsection
+
+The LISTCOMMAND Element
+\layout Standard
+
+The LISTCOMMAND element specifies a script to run to create a list of choices
+ for a FIELD of type 
+\begin_inset Quotes eld
+\end_inset 
+
+list
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+entrylist
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The standard output of a successful LISTCOMMAND is line-oriented.
+ Each line is a item for the user to choose from.
+ If the LISTCOMMAND exits non-zero, the standard output is ignored, and
+ any standard error output is used as an error message.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ESCAPESTYLE
+\begin_deeper 
+\layout Standard
+
+The ESCAPESTYLE attribute specifies the quoting behavior of symbol substitution.
+ There are three possible values.
+ If set to 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+, substituted symbols are quoted with the expectation they are inside double
+ quotes.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+single
+\begin_inset Quotes erd
+\end_inset 
+
+, the expectation is to substitute the value inside single quotes.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+, no quoting occurs and the symbol's value is substituted verbatim.
+\end_deeper 
+\layout Itemize
+
+OUTPUTENCODING
+\begin_deeper 
+\layout Standard
+
+This specifies the locale encoding of any output from the action.
+\layout Standard
+
+The default is 
+\begin_inset Quotes eld
+\end_inset 
+
+system
+\begin_inset Quotes erd
+\end_inset 
+
+, which tells the frontend to expect the system's default encoding.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The INITCOMMAND element may not have any child elements.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The child text is the script to run.
+ This is Bourne Shell script text on Unix systems and Windows Scripting
+ text on Windows systems.
+ See the section describing scripts for rules regarding script capabilities.
+\end_deeper 
+\layout Subsubsection
+
+The MENUSCREEN Element
+\layout Standard
+
+The MENUSCREEN element describes a menu.
+ It provides the title text for the screen and any help associated with
+ this screen.
+ The contents of the menu are the children of the associated MENU tag in
+ the path structure.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+ID
+\begin_deeper 
+\layout Standard
+
+The ID is a unique name identifying this screen.
+ It may only contain letters and numbers.
+\end_deeper 
+\layout Itemize
+
+TEXT
+\begin_deeper 
+\layout Standard
+
+The TEXT attribute is the text description of this screen.
+ It will be used as the title of this screen when the screen is current.
+ It will also be used as the menu item for this screen in the menu above
+ it.
+\end_deeper 
+\layout Itemize
+
+FASTPATH
+\begin_deeper 
+\layout Standard
+
+The FASTPATH attribute is either 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+false
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ If true, a user can launch the RASTA application directly to this screen.
+ If false, the user cannot do so, nor can the user ever launch directly
+ to any screens below this one in the path structure.
+\layout Standard
+
+This attribute should be false on all screens that require information from
+ a previous screen.
+ Otherwise, if the user launches directly to this screen, the required previous
+ screen will be skipped and the information will not be there.
+\layout Standard
+
+The default value is 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The MENUSCREEN element is allowed to have zero or one HELP elements as children.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The MENUSCREEN element is not allowed to have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The RINGVALUE Element
+\layout Standard
+
+The RINGVALUE element represents a choice for a field of type 
+\begin_inset Quotes eld
+\end_inset 
+
+ring
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Fields of the 
+\begin_inset Quotes eld
+\end_inset 
+
+ring
+\begin_inset Quotes erd
+\end_inset 
+
+ type have a discrete, predetermined set of choices.
+ The RINGVALUE allows the user to see a nice value, and the system to see
+ whatever value is required by the action.
+\layout Standard
+
+Imagine a program that takes 
+\begin_inset Quotes eld
+\end_inset 
+
+1
+\begin_inset Quotes erd
+\end_inset 
+
+ if it is to perform validity checking, or 
+\begin_inset Quotes eld
+\end_inset 
+
+0
+\begin_inset Quotes erd
+\end_inset 
+
+ if not.
+ The user could be given a field that says 
+\begin_inset Quotes eld
+\end_inset 
+
+Perform validity checking, 1 or 0?
+\begin_inset Quotes erd
+\end_inset 
+
+, or the user could be given a field that says 
+\begin_inset Quotes eld
+\end_inset 
+
+Perform validity checking, yes or no?
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Obviously the second display is easier to understand.
+ The RINGVALUE element maps the 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+ the user sees to the 
+\begin_inset Quotes eld
+\end_inset 
+
+1
+\begin_inset Quotes erd
+\end_inset 
+
+ the action expects.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+TEXT
+\begin_deeper 
+\layout Standard
+
+The text the user will see in the front-end.
+ In the example, this would be 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\end_deeper 
+\layout Itemize
+
+VALUE
+\begin_deeper 
+\layout Standard
+
+The actual value that will be used.
+ When the user selects 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+, the value 
+\begin_inset Quotes eld
+\end_inset 
+
+1
+\begin_inset Quotes erd
+\end_inset 
+
+ would actually be stored in the symbol table.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements 
+\begin_deeper 
+\layout Standard
+
+The RINGVALUE element may not have any child elements.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The RINGVALUE element may not have any child text.
+\end_deeper 
+\layout Subsection
+
+Path Definition Elements
+\layout Subsubsection
+
+The ACTION Element
+\layout Standard
+
+The ACTION element refers to an ACTIONSCREEN definition.
+ ACTION elements are the final elements down a given path.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+NAME
+\begin_deeper 
+\layout Standard
+
+The ID of the ACTIONSCREEN this element refers to.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The ACTION element may not have any child elements.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The ACTION element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The DEFAULTPATH Element
+\layout Standard
+
+The DEFAULTPATH element provides a default choice in conjunction with the
+ MULTIPATH element.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Standard
+
+NONE
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The DEFAULTPATH element may have one DIALOG child, one HIDDEN child, one
+ ACTION child, or a MULTIPATH/DEFAULTPATH grouping.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The DEFAULTPATH element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The DIALOG Element
+\layout Standard
+
+The DIALOG element refers to an DIALOGSCREEN definition.
+ 
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+NAME
+\begin_deeper 
+\layout Standard
+
+The ID of the DIALOGSCREEN this element refers to.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The DIALOG element may one DIALOG child, one HIDDEN child, one ACTION child,
+ or a MULTIPATH/DEFAULTPATH grouping.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The DIALOG element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The HIDDEN Element
+\layout Standard
+
+The HIDDEN element refers to an HIDDENSCREEN definition.
+ 
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+NAME
+\begin_deeper 
+\layout Standard
+
+The ID of the HIDDENSCREEN this element refers to.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The HIDDEN element may one DIALOG child, one HIDDEN child, one ACTION child,
+ or a MULTIPATH/DEFAULTPATH grouping.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The HIDDEN element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The MENU Element
+\layout Standard
+
+The MENU element refers to an MENUSCREEN definition.
+ The children of the MENU element represent the choices of the MENUSCREEN
+ when it is displayed.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+NAME
+\begin_deeper 
+\layout Standard
+
+The ID of the MENUSCREEN this element refers to.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The MENU element may have any number of MENU, DIALOG, HIDDEN, and/or ACTION
+ children.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The MENU element may not have any child text.
+\end_deeper 
+\layout Subsubsection
+
+The MULTIPATH Element
+\layout Standard
+
+The MULTIPATH element allows the path to diverge based on the value of a
+ symbol.
+ If the symbol and value of a MULTIPATH element match what is currently
+ in the symbol table, the MULTIPATH's child will be the next screen.
+ If no MULTIPATH element in a grouping matches, the DEFAULTPATH element's
+ child is followed.
+\layout Itemize
+
+Attributes
+\begin_deeper 
+\layout Itemize
+
+SYMBOL
+\begin_deeper 
+\layout Standard
+
+The name of the symbol to compare
+\end_deeper 
+\layout Itemize
+
+VALUE
+\begin_deeper 
+\layout Standard
+
+The value to check for.
+\end_deeper 
+\end_deeper 
+\layout Itemize
+
+Child Elements
+\begin_deeper 
+\layout Standard
+
+The MULTIPATH element may one DIALOG child, one HIDDEN child, one ACTION
+ child, or a MULTIPATH/DEFAULTPATH grouping.
+\end_deeper 
+\layout Itemize
+
+Child Text
+\begin_deeper 
+\layout Standard
+
+The MULTIPATH element may not have any child text.
+\end_deeper 
+\layout Subsection
+
+Scripts
+\layout Standard
+
+The RASTA definition file uses scripting to access the system in many places.
+ The action that implements a task is a script.
+ Initialization scripts allow the screens to pre-fill values.
+ Dynamic lists of choices are built from scripts.
+ This is a powerful feature to provide a customized and useful environment.
+\layout Subsubsection
+
+Execution Environment
+\layout Standard
+
+Scripts are executed with the same environment that the RASTA application
+ has.
+ There is no real endeavour to restrict them, as their privilege needs are
+ unpredictable.
+ The implementer on a given system is responsible for setting up roles and
+ restrictions.
+\layout Standard
+
+Scripts on Un*x systems are Bourne Shell text.
+ The scripts are executed inside 
+\family typewriter 
+/bin/sh
+\family default 
+.
+ Windows systems use Windows Scripting.
+ Any valid syntax for these environments is accepted.
+ The writer of the description file has to make sure that the script text
+ is properly escaped for XML.
+\layout Standard
+
+LISTCOMMAND and INITCOMMAND scripts are run with standard input directed
+ from /dev/null.
+ Standard output and error are collected.
+ If the script exits with a return code of 0, the standard output data is
+ used.
+ If the script exits nonzero, the standard output data is thrown out, and
+ the standard error data may be used as an error message.
+ 
+\layout Standard
+
+LISTCOMMAND output is used to generate a list of choices for the user.
+ Each line of output is an individual choice.
+ INITCOMMAND output is used to fill values in the symbol table.
+ Each odd line is a symbol name, and the following even line is the value
+ for the symbol.
+\layout Standard
+
+ACTION scripts are run with standard input, output, and error behavior defined
+ by the TTY attribute.
+ If the TTY attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+, then the application collects the output and error data to possibly display
+ to the user.
+ If 
+\begin_inset Quotes eld
+\end_inset 
+
+no
+\begin_inset Quotes erd
+\end_inset 
+
+, the application merely throws the data away, because it isn't expecting
+ any.
+ If the TTY attribute is 
+\begin_inset Quotes eld
+\end_inset 
+
+self
+\begin_inset Quotes erd
+\end_inset 
+
+, the application lets the script handle its own data, and does not interfere.
+\layout Subsubsection
+
+Symbol Substitution
+\layout Standard
+
+Actions exist to take user input and do something with it.
+ It stands to reason that there needs to be some way to get the user's input
+ into the script for the action.
+ This is accomplished by symbol substitution.
+ RASTA scripting uses a simple scheme for substituting symbols.
+\layout Standard
+
+Symbol names are not allowed to have spaces, or the character 
+\begin_inset Quotes eld
+\end_inset 
+
+#
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ In addition, the character 
+\begin_inset Quotes eld
+\end_inset 
+
+#
+\begin_inset Quotes erd
+\end_inset 
+
+ is a comment in the script text anyway.
+ A symbol is named in a script by surrounding it with 
+\begin_inset Quotes eld
+\end_inset 
+
+#
+\begin_inset Quotes erd
+\end_inset 
+
+ characters.
+ A symbol named 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\family typewriter 
+user_name
+\family default 
+
+\begin_inset Quotes erd
+\end_inset 
+
+ would be used in the script as 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\family typewriter 
+#user_name#
+\family default 
+
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ When the script is reached in the path, the RASTA system substitutes the
+ current value of 
+\family typewriter 
+user_name
+\family default 
+ into the script.
+ The script can then make use of the value as it wishes.
+ The following example illustrates using the 
+\family typewriter 
+user_name
+\family default 
+ symbol to add a user to the employee database.
+\layout Quote
+
+
+\family typewriter 
+#!/bin/sh
+\layout Quote
+
+USER=
+\begin_inset Quotes erd
+\end_inset 
+
+#user_name#
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quote
+
+if [ ! -z 
+\begin_inset Quotes eld
+\end_inset 
+
+$USER
+\begin_inset Quotes erd
+\end_inset 
+
+ ]
+\layout Quote
+
+then
+\layout Quote
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+/usr/local/emp_methods/add_user 
+\begin_inset Quotes eld
+\end_inset 
+
+$USER
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Quote
+
+fi
+\layout Standard
+
+The value for 
+\family typewriter 
+user_name
+\family default 
+ is substituted and is then set into the variable 
+\family typewriter 
+$USER
+\family default 
+.
+ Note also that this particular script places double quotes around the symbol
+ name.
+ The value will be inside those quotes when the script is run, so it must
+ be escaped properly.
+ This is accomplished by the ESCAPESTYLE attribute.
+\layout Subsubsection
+
+Symbol Escape Styles
+\layout Standard
+
+Modern shells usually have special rules for the evaluation of strings inside
+ single or double quotes.
+ Some characters are special in those environments, others are not.
+ Values in the RASTA symbol table have no special characteristics of their
+ own.
+ They are merely text strings.
+ When they are substituted into the shell script, the shell may find some
+ of the characters in the value to be of special significance and evaluate
+ them accordingly.
+ The writer of the script may wish for this to happen, or they may find
+ it an unwanted side effect.
+ The ESCAPESTYLE attribute is provided for this reason.
+ 
+\layout Standard
+
+The ESCAPESTYLE attribute can be set to the values 
+\begin_inset Quotes eld
+\end_inset 
+
+single
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+, or 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The value 
+\begin_inset Quotes eld
+\end_inset 
+
+none
+\begin_inset Quotes erd
+\end_inset 
+
+ is the simplest; all symbols are substituted exactly as they exist in the
+ symbol table.
+ The values 
+\begin_inset Quotes eld
+\end_inset 
+
+single
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+double
+\begin_inset Quotes erd
+\end_inset 
+
+ correspond to single and double quotes, respectively.
+ When set, the RASTA system makes the assumption that all values will be
+ evaluated inside the given quoting type.
+ During script preparation, any characters known to be special to the given
+ quoting type will be escaped.
+ The script will see these characters as normal characters instead of giving
+ them special meaning.
+ The following example shows a symbol 
+\family typewriter 
+dollar_string
+\family default 
+ being substituted into a double-quoted environment on a Unix system.
+ The 
+\family typewriter 
+dollar_string
+\family default 
+ symbol has the value 
+\begin_inset Quotes eld
+\end_inset 
+
+$2.00
+\begin_inset Quotes erd
+\end_inset 
+
+, but the character 
+\begin_inset Quotes eld
+\end_inset 
+
+$
+\begin_inset Quotes erd
+\end_inset 
+
+ is special to the shell.
+\layout Itemize
+
+In the description file:
+\begin_deeper 
+\layout Standard
+
+
+\family typewriter 
+DOLLAR_VAL=
+\begin_inset Quotes erd
+\end_inset 
+
+#dollar_string#
+\begin_inset Quotes erd
+\end_inset 
+
+
+\end_deeper 
+\layout Itemize
+
+How the script appears at runtime:
+\begin_deeper 
+\layout Standard
+
+
+\family typewriter 
+DOLLAR_VAL=
+\begin_inset Quotes erd
+\end_inset 
+
+
+\backslash 
+$2.00
+\begin_inset Quotes erd
+\end_inset 
+
+
+\the_end

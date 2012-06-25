@@ -1,0 +1,93 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTA
+  SYSTEM "file://@DTD_LOCATION@/rasta.dtd" >
+<RASTA xmlns="http://www.jlbec.org/rasta/rasta-0">
+  <SCREENS>
+    <MENUSCREEN ID='top' TEXT='Communications'/>
+    <DIALOGSCREEN ID='ifconfig_up' TEXT='Configure a Network Interface'>
+        <FIELD NAME='interface' TYPE='list' REQUIRED='true'
+               TEXT='Interface'>
+          <LISTCOMMAND ESCAPESTYLE='none' OUTPUTENCODING='ISO-8859-1'>
+              /sbin/ifconfig -a |
+                  awk 'BEGIN{up=0}
+                      /^[a-z]/{k=$1}
+                      $1=="UP"{up=1}
+                      /^$/{if (up == 0) { print k }; up=0; k=""}'
+          </LISTCOMMAND>
+        </FIELD>
+        <FIELD NAME='ip_address' TYPE='entry' REQUIRED='true'
+               TEXT='IP Address'>
+        </FIELD>
+        <FIELD NAME='subnet_mask' TYPE='entry' REQUIRED='true'
+               TEXT='Subnet Mask'>
+        </FIELD>
+    </DIALOGSCREEN>              
+    <DIALOGSCREEN ID='ifconfig_down'
+                  TEXT='Shut Down a Network Interface'>
+        <FIELD NAME='interface' TYPE='list' REQUIRED='true'
+               TEXT='Interface' MULTIPLE='false'>
+          <LISTCOMMAND ESCAPESTYLE='none' OUTPUTENCODING='ISO-8859-1'>
+              /sbin/ifconfig -a |
+                  awk 'BEGIN{up=0}
+                      /^[a-z]/{k=$1}
+                      $1=="UP"{up=1}
+                      /^$/{if (up == 1) { print k }; up=0; k=""}'
+          </LISTCOMMAND>
+        </FIELD>
+    </DIALOGSCREEN>              
+    <ACTIONSCREEN ID='do_ifconfig_up'
+                  TEXT='Configuring a Network Interface'
+                  CONFIRM='true' TTY='yes'>
+        <ACTIONCOMMAND ESCAPESTYLE='double' OUTPUTENCODING='ISO-8859-1'>
+            # This computes the broadcast address.
+            I=4
+            IP="#ip_address#"
+            MASK="#subnet_mask#"
+            IPOCTET="${IP%%.*}"
+            IPREMAIN="${IP#*.}"
+            MASKOCTET="${MASK%%.*}"
+            MASKREMAIN="${MASK#*.}"
+            BCAST=
+            while [ "$I" -gt 0 ] 
+            do
+                let BCASTOCTET="($IPOCTET &amp; $MASKOCTET) + \
+                                (~$MASKOCTET &amp; 255)"
+                BCAST="${BCAST}.${BCASTOCTET}"
+                IPOCTET="${IPREMAIN%%.*}"
+                if [ "$IPOCTET" = "$IPREMAIN" -a "$I" != "1" ]
+                then
+                    REMAIN=
+                fi
+                IPREMAIN="${IPREMAIN#*.}"
+                MASKOCTET="${MASKREMAIN%%.*}"
+                if [ "$MASKOCTET" = "$MASKREMAIN" -a "$I" != "1" ]
+                then
+                    REMAIN=
+                fi
+                MASKREMAIN="${MASKREMAIN#*.}"
+                let I="$I - 1"
+            done
+            BCAST="${BCAST#.}"
+            echo /sbin/ifconfig "#interface#" up "#ip_address#" \
+                netmask "#subnet_mask#" broadcast "$BCAST"
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_ifconfig_down'
+                  TEXT='Shutting Down a Network Interface'
+                  CONFIRM='false' TTY='yes'>
+        <ACTIONCOMMAND ESCAPESTYLE='double' OUTPUTENCODING='ISO-8859-1'>
+            /sbin/ifconfig "#interface#" down
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+  </SCREENS>
+  <PATH>
+    <MENU NAME='top'>
+        <DIALOG NAME='ifconfig_up'>
+          <ACTION NAME='do_ifconfig_up'/>
+        </DIALOG>
+        <DIALOG NAME='ifconfig_down'>
+          <ACTION NAME='do_ifconfig_down'/>
+        </DIALOG>
+    </MENU>
+  </PATH>
+</RASTA>

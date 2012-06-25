@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTA
+  SYSTEM "file://@DTD_LOCATION@/rasta.dtd" >
+<RASTA xmlns="http://www.jlbec.org/rasta/rasta-0">
+  <SCREENS>
+    <MENUSCREEN ID='top' TEXT='Debian Package Management'/>
+    <DIALOGSCREEN ID='apt_search' TEXT='Find a Package'>
+        <FIELD NAME='package_name' TYPE='entry' REQUIRED='true'
+               TEXT='Query string'/>
+    </DIALOGSCREEN>              
+    <DIALOGSCREEN ID='apt_show' TEXT='Show Package Descriptions'>
+        <FIELD NAME='package_names' TYPE='entrylist' REQUIRED='true'
+               TEXT='Packages to display' MULTIPLE='true' SINGLECOLUMN='true'>
+          <LISTCOMMAND ESCAPESTYLE='none' OUTPUTENCODING='ISO-8859-1'>
+              apt-cache search .
+          </LISTCOMMAND>
+        </FIELD>
+    </DIALOGSCREEN>              
+    <DIALOGSCREEN ID='apt_showpkg' TEXT='Show Package Details'>
+        <FIELD NAME='package_names' TYPE='entrylist' REQUIRED='true'
+               TEXT='Packages to display' MULTIPLE='true' SINGLECOLUMN='true'>
+          <LISTCOMMAND ESCAPESTYLE='none' OUTPUTENCODING='ISO-8859-1'>
+              apt-cache search .
+          </LISTCOMMAND>
+        </FIELD>
+    </DIALOGSCREEN>              
+    <DIALOGSCREEN ID='apt_install' TEXT='Select Packages to Install'>
+        <FIELD NAME='package_names' TYPE='entrylist' REQUIRED='true'
+               TEXT='Packages to Install' MULTIPLE='true' SINGLECOLUMN='true'>
+          <LISTCOMMAND ESCAPESTYLE='none' OUTPUTENCODING='ISO-8859-1'>
+              apt-cache search .
+          </LISTCOMMAND>
+        </FIELD>
+        <FIELD NAME='allow_deps' TEXT='Install required depandancies'
+               TYPE='ring' REQUIRED='false'>
+            <RINGVALUE TEXT='No' VALUE=''/>
+            <RINGVALUE TEXT='Yes' VALUE='-y'/>
+        </FIELD>
+    </DIALOGSCREEN>              
+    <ACTIONSCREEN ID='apt_update' TEXT='Update Package Lists'
+                  CONFIRM='false' TTY='yes'>
+        <ACTIONCOMMAND ESCAPESTYLE='none'>
+            /usr/bin/apt-get -q update
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='apt_search_command' TEXT='Listing Packages'
+                  CONFIRM='false' TTY='yes'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            /usr/bin/apt-cache search '#package_name#'
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='apt_install_command' TEXT='Installing Packages'
+                  CONFIRM='true' TTY='yes'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            apt-get -q #allow_deps# install #package_names#
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='apt_show_command' TEXT='Diasplaying Packages'
+                  CONFIRM='false' TTY='yes'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            apt-cache show #package_names#
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='apt_showpkg_command' TTY='yes'
+                  TEXT='Diasplaying Package Details' CONFIRM='false'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            apt-cache showpkg #package_names#
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+  </SCREENS>
+  <PATH>
+    <MENU NAME='top'>
+        <ACTION NAME='apt_update'/>
+        <DIALOG NAME='apt_search'>
+          <ACTION NAME='apt_search_command'/>
+        </DIALOG>
+        <DIALOG NAME='apt_show'>
+          <ACTION NAME='apt_show_command'/>
+        </DIALOG>
+        <DIALOG NAME='apt_showpkg'>
+          <ACTION NAME='apt_showpkg_command'/>
+        </DIALOG>
+        <DIALOG NAME='apt_install'>
+          <ACTION NAME='apt_install_command'/>
+        </DIALOG>
+    </MENU>
+  </PATH>
+</RASTA>

@@ -1,0 +1,988 @@
+2004-04-23	Joel Becker	<joel.becker@oracle.com>
+
+	* debian/changelog: Bump to 0.1.4 for release.
+
+2004-04-23	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Fix a stupid NULL bug in clr_query_list().
+
+2004-03-02	Joel Becker	<joel.becker@oracle.com>
+
+	* *.dtd: Add the ATTLIST for xmlns.
+
+2003-10-23	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Ok, print help where appropriate.
+
+2003-10-23	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Fix segfault in menu help queries.
+
+2003-10-23	Joel Becker	<joel.becker@oracle.com>
+
+	* configure.in: Bump to 0.1.3.
+	* clrasta/clrasta.c: Add intuitive bits to field prompts.
+
+2003-10-23	Joel Becker	<joel.becker@oracle.com>
+
+	* configure.in: Bump to 0.1.2.
+	* redhat/rasta.spec.in: Fix stupid RPM error-on-unpackaged.
+		Add .la files to rasta-devel package.
+	* clrasta/clrasta.c: Fix hidden screen behavior.
+	
+2003-10-22	Joel Becker	<joel.becker@oracle.com>
+
+	* librasta/renumeration.c: 64bit cast warning.
+	* gtkrasta/gtkrasta.c: 64bit cast warning.
+	* redhat/rasta.spec.in: Work on x86_64.
+
+2003-09-24	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile;am: Add variable for CGIRASTA.
+	* configure.in: Test for liblockfile and switch on cgirasta.
+	* acconfig.h: Add HAVE_LOCKFILE
+
+2003-06-10	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile.am: Add redhat/rasta.spec.in to DIST_FILES
+	* configure.in: Add redhat/rasta.spec output.
+	* redhat/rasta.spec.in: First cut of specfile.
+
+2003-05-23	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Fixed a bug with choice querying
+
+2003-05-09	Joel Becker	<joel.becker@oracle.com>
+
+	* HACKING: Updated for oss.oracle.com and Subversion.
+
+2003-05-08	Joel Becker	<joel.becker@oracle.com>
+
+	* debian/control: Added Provides for the frontends.
+
+2003-05-08	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile.am: Added debian files to 'make dist'.
+
+2003-05-08	Joel Becker	<joel.becker@oracle.com>
+
+	* configure.in: Retract MINOR_VERSION and go to 0.1.1,
+		instead.
+
+2003-05-07	Joel Becker	<joel.becker@oracle.com>
+
+	* configure.in: Bump MINOR_VERSION because we 'released' 0.1.
+
+2003-05-05	Joel Becker	<joel.becker@oracle.com>
+
+	* librasta/rastaaction.c: Include <string.h>
+	* librasta/rastaexec.c: Include <string.h>
+
+2003-05-02	Joel Becker	<joel.becker@oracle.com>
+
+	* examples/*.rasta.in: Fixed file:/ URLs as file:///.
+	* librasta/rastacontext.c: Fixed file:/ URLs as file:///.
+	* examples/redhat-package.rasta.in: Fixed ACTIONCOMMAND bug.
+
+2003-05-02	Joel Becker	<joel.becker@oracle.com>
+
+	* .: Moved Rasta from CVS to Subversion.
+	
+2002-08-09	Manish Singh	<manish.singh@oracle.com>
+
+	* configure.in
+	* cgirasta/Makefile.am: check for libcrypt
+
+	* autogen.sh: pod generation needs to be down before automake to 
+	shut it up
+
+2002-06-20	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.{lyx,tex}: Mostly finished advanced
+	  topic stuff.
+
+2002-06-17	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.{lyx,tex}: Some advanced topic stuff.
+
+2002-06-14	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.{lyx,tex}: Some advanced topic stuff.
+
+2002-06-12	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.{lyx,tex}: Tutorial has the initial
+	  example section complete.
+
+2002-06-10	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.{lyx,tex}: Tutorial updates.
+
+2002-06-06	Joel Becker	<joel.becker@oracle.com>
+
+	* rastacgiuser.dtd: Allow empty passwords.
+	* cgirasta/cgirasta.c: Login checking works.
+
+2002-05-31	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Some iconv error reporting.
+	* gtkrasta/gtkrasta.c: Some timbo hints
+	* HACKING: Added
+	* README: Updated
+	* AUTHORS: Updated
+	* cgirasta/cgirasta.c: Some login work
+
+2002-05-03	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Handle empty lists gracefully.
+
+2002-05-03	Joel Becker	<joel.becker@oracle.com>
+
+	* acconfig.h: Renamed ENABLE_SPECIAL to ENABLE_DEPRECATED
+	* configure.in: Renamed ENABLE_SPECIAL to ENABLE_DEPRECATED
+	* librasta/rasta.h: Renamed ENABLE_SPECIAL to ENABLE_DEPRECATED
+	* librasta/rastadialog.c: Renamed ENABLE_SPECIAL to
+	  ENABLE_DEPRECATED
+	* clrasta/clrasta.c: Renamed ENABLE_SPECIAL to ENABLE_DEPRECATED
+	* gtkrasta/gtkrasta.c: Renamed ENABLE_SPECIAL to
+	  ENABLE_DEPRECATED
+2002-05-03	Joel Becker	<joel.becker@oracle.com>
+
+	* rasta.dtd: Removed ip_address and volume types
+	* debian/*.files: Changed for move of RASTA namespace from
+	  ./rasta/1.0 to ./rasta/rasta-1.
+	* librasta/rastacontext.c: Added new validate_dtd() function.
+	* tools/radcommon.[ch],rastaadd.c,rastadel.c: Rewrote
+	  rad_validate_doc() for internal subset munging.
+	* cgirasta/cgirasta.c: Rewrote validate_doc for internal subset
+	  munging.
+2002-04-29	Joel Becker	<joel.becker@oracle.com>
+
+	* acconfig.h: Added RASTA_NAMESPACE.
+	* configure.in: Added RASTA_NAMESPACE and modified the
+	  version-specific directories.
+	* rasta-0.1.pc.in: Updated namespace stuff
+	* system.rasta.in: Changed the namespace to rasta-0.
+	* examples/debian-package.rasta.in: Changed the namespace to
+	  rasta-0.
+	* examples/redhat-package.rasta.in: Changed the namespace to
+	  rasta-0.
+	* examples/network.rasta.in: Changed the namespace to rasta-0.
+	* tests/test.rasta.tmpl.in: Changed the namespace to rasta-0.
+	* tests/testadd.rasta.in: Changed the namespace to rasta-0.
+	* tests/testdel.rasta.in: Changed the namespace to rasta-0.
+	* tests/teststate.rasta.in: Changed the namespace to rasta-0.
+	* tools/radcommon.c: Added config.h
+	* tools/rastaedit.c: Added config.h
+
+2002-04-29	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile.am: Added system.rasta.in and a docs target.
+	* system.rasta.in: Added default system.rasta template
+	* debian: Added initial debian packaging support.
+	* configure.in: Added AC_OUTPUT lines for clrasta.1, cgirasta.1,
+	  rastaedit.1, tests/*, and examples/*.
+	* autogen.sh: Exit on configure error.
+	* rasta.dtd: Reorganized action screens to have ACTIONCOMMAND
+	  and HELP children.
+	* rastacgisession.dtd: Added KEY attribute.
+	* rastacgiuser.dtd: changed PASSWORD to CRYPT
+	* clrasta/clrasta.c: Added --help and --version
+	* gtkrasta/gtkrasta.c: Added --help and --version
+	* cgirasta/cgirasta.c: Added a bunch of the login logic
+	* cgirasta/login.html: Initial template
+	* documentation/reference.{lyx,tex}: Updated for the
+	  ACTIONCOMMAND changes.
+	* documentation/Makefile.am: Added the docs target.
+	* documentation/Makefile.am: Added the new pod files.
+	* documentation/*.pod: Updated and added missing ones for
+	  cgirasta, rastaedit, and clrasta.
+	* examples/Makefile.am: Updated for template changes (*.in)
+	* examples/*.rasta.in: Made the DTD location a configure
+	  substitution (DTD_LOCATION).
+	* tests/Makefile.am: Updated for template changes (*.in)
+	* tests/*.rasta.in: Made the DTD location a configure
+	  substitution (DTD_LOCATION).
+	* tests/testadddel: Supported the move from test.rasta.orig to
+	  test.rasta.tmpl.
+
+2002-04-18	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile.am: add cgirasta dir and additional DTD list
+	* TODO: Remove DTD issue
+	* acconfig.h: Add _RASTA_DATA_DIR
+	* configure.in: Add _RASTA_DATA_DIR and cgirasta bits
+	* rasta.dtd: Remove modification bits
+	* clrasta.c: Add state loading and better filename building.
+	* gtkrasta/gtkrasta.c: Fix bug with 'readonly' fields, better
+	  variable saving and better filename munging.
+	* librasta/rasta.h: DTD defines and state loading bits.
+	* librasta/rastacontext.c: Add state loading and proper DTD
+	  validation.
+	* librasta/rastascope.c: Add state saving code.
+	* librasta/rastascope.h: Add state saving prototypes.
+	* librasta/rastascreen.c: Move rasta_context_get_screen() to
+	  librasta/rastacontext.c.
+	* tests/testadd.rasta: Modify for new modification DTD.
+	* tests/testdel.rasta: Modify for new modification DTD.
+	* tests/testadddel: Modify for new modification DTD.
+	* tools/radcommon.c: Add proper DTD validation.
+	* tools/radcommon.h: Prototype adjustment for proper DTD
+	  validation.
+	* tools/rastaadd.c: Proper filename building and DTD management.
+	* tools/rastadel.c: Proper filename building and DTD management.
+	* rastacgiauth.dtd: Added CGI authorization state DTD.
+	* rastacgiconf.dtd: Added CGI configuration DTD.
+	* rastacgisession.dtd: Added CGI session DTD.
+	* rastacgiuser.dtd: Added CGI user DTD.
+	* rastamodify.dtd: Added modification DTD.
+	* rastastate.dtd: Added saved state DTD.
+	* librasta/state.rasta: Test file for state loading.
+	* cgirasta/Makefile.am,action.html,cgirasta.c,error.html,
+	  jcgi.[ch],jiterator.[ch],jsha.[ch],login.html,screen.html:
+	  Added.
+
+2002-03-29	Joel Becker	<joel.becker@oracle.com>
+
+	* examples/Makefile.am: Added Makefile.am for example directory
+	* documentation/Makefile.am: Added EXTRA_DIST for .lyx/.tex
+	  files.
+	* Makefile.am: Added examples subdir
+	* configure.in: Added examples subdir
+	* tests/Makefile.am: Updated for new .rasta filenames.
+
+2002-03-29	Joel Becker	<joel.becker@oracle.com>
+
+	* gtkrasta/gtkrasta.c: Changed rasta.xml to system.rasta
+	* tools/rasta{add,del}.c: Added G_DIR_SEPARATOR_S work.
+
+2002-03-29	Joel Becker	<joel.becker@oracle.com>
+
+	* TODO: Added some TODOs.
+	* clrasta/clrasta.c: Added action execution.
+
+2002-03-28	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx: Removed ipaddr and volume fields.
+	* documentation/reference.tex: Removed ipaddr and volume fields.
+
+2002-03-28	Joel Becker	<joel.becker@oracle.com>
+
+	* acconfig.h: Added ENABLE_SPECIAL bits
+	* configure.in: Added --enable-special-fields to define
+	  ENABLE_SPECIAL in config.h.  This is the first step in
+	  removing RASTA_FIELD_IPADDR and RASTA_FIELD_VOLUME.
+	* gtkrasta/gtkrasta.c: Isolated the appropriate sections with
+	  ENABLE_SPECIAL.
+	* librasta/rasta.h: ENABLE_SPECIAL
+	* librasta/rastaaction.c: ENABLE_SPECIAL
+	* librasta/rastacontext.c: ENABLE_SPECIAL
+	* librasta/rastadialog.c: ENABLE_SPECIAL
+	* librasta/rastaexec.c: ENABLE_SPECIAL
+	* librasta/rastahidden.c: ENABLE_SPECIAL
+	* librasta/rastainitcommand.c: ENABLE_SPECIAL
+	* librasta/rastamenu.c: ENABLE_SPECIAL
+	* librasta/rastascope.c: ENABLE_SPECIAL
+	* librasta/rastascreen.c: ENABLE_SPECIAL
+	* librasta/rastatraverse.c: ENABLE_SPECIAL
+	* clrasta/Makefile.am: Removed clrquery.[ch].
+	* clrasta/clquery.c: Removed and integrated into clrasta.c
+	* clrasta/clquery.h: Removed and integrated into clrasta.c
+	* clrasta/clrasta.c: Added the old bits from clquery.[ch].
+	  Added the rest of the run_dialog_field_*() functions.  Removed
+	  the old query functions and CLRDialogField code.
+	* librasta/test.xml: Cleaned up an inconsistency with the
+	  'office' field.
+	* examples/debian-package.xml: Removed some old test code.
+
+2002-03-27	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c: Added run_dialog_{list,ring} functions.
+	* clrasta/clquery.h: Added flags for new query work.
+	* clrasta/clquery.h: Added clr_print_prompt(),
+	  clr_query_response(), and clr_query_list() for new query
+	  work.
+
+2002-03-13	Joel Becker	<joel.becker@oracle.com>
+
+	* configure.in: Manpage updates.
+	* autogen.sh: Manpage updates.
+	* documentation/man: Manpage updates.
+
+2002-03-13	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/whitepaper.{lyx,tex}: Abstract edits.
+	* documentation/reference.{lyx,tex}: Some small grammar changes.
+
+2002-02-19	Joel Becker	<joel.becker@oracle.com>
+
+	* rasta.dtd: Added encoding definition.
+
+2001-12-10	Manish Singh	<manish.singh@oracle.com>
+
+	* configure.in: fix prefix NONE handling
+
+2001-12-05	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile.am: Changed stuff for LT_RELEASE style versioning
+	* configure.in: Changed for LT_RELEASE style versioning
+	* rasta-1.0.pc.in: Removed, because our version is 0.1
+	* rasta-0.1.pc.in: Added, because of the same
+
+2001-12-01	Joel Becker	<joel.becker@oracle.com>
+
+	* configure.in: libtool versioning
+	* librasta/Makefile.am: libtool versioning
+
+2001-12-01	Joel Becker	<joel.becker@oracle.com>
+
+	* tests/testadddel: Now verifies that the resulting file is
+	  equivalent to the original after addition and deletion.
+
+2001-12-01	Joel Becker	<joel.becker@oracle.com>
+
+	* tests/Makefile.am: Added a shippable test directory.
+	* tests/testadddel: Script to test addition and deletion.
+	* tests/test.xml.org: Start file for testadddel.
+	* tests/testadd.xml: Additions for testadddel.
+	* tests/testdel.xml: Deletions for testadddel.
+
+2001-12-01	Joel Becker	<joel.becker@oracle.com>
+
+	* Makefile.am: Added documentation to the subdir list.
+	* acconfig.h: Added _RASTA_DIR default.
+	* autogen.sh: Modified to handle the .pod -> .in munging.
+	* configure.in: Modified to output the man pages.
+	* rasta-1.0.pc.in: Updated to properly show dtd location.
+	* clrasta/Makefile.am: Removed -D_RASTA_DIR.
+	* clrasta/clrasta.c: Added config.h.
+	* documentation/Makefile.am: Added the man subdir.
+	* documentation/man/Makefile.am: Makefile.am for man pages
+	* documentation/man/gtkrasta.1.pod: First cut of a gtkrasta
+	  man page.
+	* documentation/man/rastaadd.1.pod: First cut of a rastaadd
+	  man page.
+	* documentation/man/rastadel.1.pod: First cut of a rastadel
+	  man page.
+	* gtkrasta/Makefile.am: Removed -D_RASTA_DIR.
+	* gtkrasta/gtkrasta.c: Added config.h.
+	* tools/Makefile.am: Added rastadel.
+	* tools/radcommon.[hc]: Moved validate_addition() to rastaadd.c.
+	* tools/rastaadd.c: Handles validate_addition() internally.
+
+2001-11-27	Manish Singh	<manish.singh@oracle.com>
+
+	* configure.in: update gtk deprecation cppflags
+
+2001-11-27	Joel Becker	<joel.becker@oracle.com>
+
+	* rasta.dtd: Changed PATHINSERT element definition for speific
+	  PATH attributes.
+	* tools/radcommon.h: Added rad_validate_doc(), rad_find_path(),
+	  and rad_save_file().
+	* tools/radcommon.c: Added rad_find_path() and rad_save_file().
+	* tools/radcommon.c(rad_clean_context): Removed freeing of
+	  documents to avoid cross-linked pointer segfault.
+	* tools/radcommon.c(rad_parse_file): Removed validation from the
+	  parsing code.
+	* tools/rastaadd.c: Added add_paths() and process_path().
+	* tools/rastaadd.c(process_screens): Changed process_screen()
+	  to process_screens().  It no longer validates changes inline.
+	  rastaadd now does a validation of changes before saving.
+	* tools/rastaadd.c(add_screens): Most of the sanity logic has
+	  been removed in place of a single validation before saving.
+
+2001-11-13	Joel Becker	<joel.becker@oracle.com>
+
+	* gtkrasta/gtkrasta.c(ac_start): Added g_locale_from_utf8() for
+	  the action command.
+	* librasta/rastadialog.c(rasta_listcommand_run): Added
+	  g_locale_from_utf8() for the list command.
+	* librasta/rastainitcommand.c(rasta_initcomand_run): Added
+	  g_locale_from_utf8() for the initcommand.
+	* librasta/rastaaction.c(rasta_action_screen_get_comand):
+	  Documented the locale considerations.
+
+2001-11-09	Joel Becker	<joel.becker@oracle.com>
+
+	* gtkrasta/gtkrasta.c(listy and ringy functions): List and
+	  ring elements now highlight the current selection for
+	  single-selection mode.
+	* redhat-package.xml: Added
+
+2001-11-09	Joel Becker	<joel.becker@oracle.com>
+
+	* gtkrasta/gtkrasta.c(listy and ringy functions):  Modified
+	  the list and ring dialogs to do a lazy load of options.
+	* nicsetup.xml: Added proxy clearing to non-other dialup ISPs
+	* nicsetup.xml: Added proxy choices to the other ISP
+
+2001-11-08	Joel Becker	<joel.becker@oracle.com>
+
+	* gtkrasta/gtkrasta.c(create_button_panel): New layout for
+	  the buttons.
+	* gtkrasta/gtkrasta.c(start_activity,finish_activity): Correct
+	  behavior for the new button layout.
+
+2001-11-08	Joel Becker	<joel.becker@oracle.com>
+
+	* librasta/rastaexec.c(rasta_exec_command_v): Modified to use
+	  g_spawn_async_with_pipes() as the backend.  This required
+	  the addition of RastaExecFDProtocol arguments.
+	* librasta/rastaexec.c(rasta_exec_command_l): Modified for the
+	  new rasta_exec_command_v().
+	* librasta/rasta.h: Modified prototypes for
+	  rasta_exec_command_l() and rasta_exec_command_v().  Added the
+	  RastaExecFDProtocol enum.
+	* librasta/rastadialog.c(rasta_listcommand_run): Modified for
+	  the new rasta_exec_command_v().
+	* librasta/rastainitcommand.c(rasta_initcommand_run): Modified
+	  for the new rasta_exec_command_v().
+	* gtkrasta/gtkrasta.c(ac_start): Modified for the new
+	  rasta_exec_command_v().
+	* gtkrasta/gtkrasta.c(init_start_func): Modified to use
+	  g_io_channel_set_flags().
+	* gtkrasta/gtkrasta.c(lc_start): Modified to use
+	  g_io_channel_set_flags().
+	* gtkrasta/gtkrasta.c(ic_start): Modified to use
+	  g_io_channel_set_flags().
+	* gtkrasta/gtkrasta.c(ac_start): Modified to use
+	  g_io_channel_set_flags().
+	* nicrasta/nicrasta.c(test_audio): Modified for the new
+	  rasta_exec_command_v().
+	* nicrasta/nicrasta.c(create_action): Modified for the new
+	  rasta_exec_command_v().
+
+2001-10-31	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Add some language stuff
+
+2001-10-22	Manish Singh	<manish.singh@oracle.com>
+
+	* Turn on deprecation checks, update files reflecting changes
+
+2001-10-22	Manish Singh	<manish.singh@oracle.com>
+
+	* nicsetup.xml: typo fix (detext -> detect) in display settings
+
+2001-10-16	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Some autoconfig stuff, seems to be working so
+	  far.
+
+2001-10-16	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx,documentation/reference.tex:
+	  More documentation of scripting bits.
+	* nicsetup.xml: Added locale screens.
+
+2001-10-05	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx,documentation/reference.tex:
+	  All screen definition tags are now documented.
+
+2001-10-05	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx,documentation/reference.tex:
+	  Updated to reflect the "top" changes.
+
+2001-10-05	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Silly indentation fixes.
+	* rasta.dtd: Added DIALOG as a valid child of PATH.
+	* librasta/rastacontext.c: Removed the requirement for the
+	  first MENU to be named "top".
+	* librasta/rastascreen.c: Removed the requirement for the first
+	  MENU to be named "top".
+	* librasta/rastatraverse.c(rasta_validate_root): Removed the
+	  requirement for the first MENU to be named "top".  Added
+	  DIALOG as a valid child of PATH.
+	* librasta/rastatraverse.h: Updated the prototype for
+	  rasta_find_fastpath().
+
+2001-10-05	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx,documentation/reference.tex:
+	  Updated the Reference section some.
+
+2001-10-04	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx,documentation/reference.tex:
+	  Updated the Reference section some.
+
+2001-10-03	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/reference.lyx,documentation/reference.tex:
+	  Added these files.
+
+2001-10-03	Joel Becker	<joel.becker@oracle.com>
+
+	* debian-package.xml: Added a sample description file for
+	  Debian apt.
+
+2001-10-03	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/whitepaper.lyx,documentation/whitepaper.tex:
+	  Initial draft of whitepaper.
+
+2001-10-03	Joel Becker	<joel.becker@oracle.com>
+
+	* clrasta/clrasta.c(load_options): Default the filename to
+	  _RASTA_DIR/system.rasta.
+	* librasta/rastatraverse.c(rasta_validate_root): memory leak.
+	* tools/Makefile.am: Add bits for rastaadd
+	* tools/rastaadd.c: Started the add code
+	* tools/radcommon.[ch]: Common routines for rastaadd and
+	  rastadel
+
+2001-10-03	Joel Becker	<joel.becker@oracle.com>
+
+	* documentation/whitepaper.lyx,documentation/whitepaper.tex:
+	  Started cooking up a whitepaper.
+
+2001-09-25	Manish Singh	<manish.singh@oracle.com>
+
+	* gtkrasta/gtkrasta.c: sync with new api changes
+
+	* tools/gtkrastaliststore.c: ditto
+
+2001-09-25	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Single-quote bugs in nicsetup.xml
+
+2001-09-24	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: don't squash old dialup account
+
+2001-09-21	Manish Singh	<manish.singh@oracle.com>
+
+	* nicsetup.xml: use /bin/mixer directly to set volume
+
+2001-08-30	Joel Becker	<joel.becker@oracle.com>
+
+	* gtkrasta/gtkrasta.c(do_cancel): Kill the process group.
+	* librasta/rastaexec.c(rasta_exec_process_v): Have the subshell
+	  set its own process group.
+
+2001-08-30	Manish Singh	<manish.singh@oracle.com>
+
+	* nicsetup.xml: Make screen title for the top level unique so we
+	can key on it
+
+2001-08-30	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: mouse configuration failed to run
+	  /etc/scripts/config/mouse.  oops.
+
+2001-08-30	Manish Singh	<manish.singh@oracle.com>
+
+	* configure.in: add -Wall the smart way
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* niccustom.xml: Added a Rasta config for the custom file
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Configuration queries are now routed to
+	  /dev/null on stderr, and a dialog is provided.
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Added 1>/dev/null 2>&1 to all ACTION commands.
+	  Added return code checking and proper timbo responses to the
+	  commands too.
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Changes to add checking for an empty prefix or
+	  call waiting value when the matching checkbox is checked.
+	* librasta/rastascreen.c(rasta_screen_previous): Changed to not
+	  rerun the initcommand on a screen we are backing up to.  This
+	  would squash any user-supplied values in the scope.  oops.
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* autogen.sh: Remove stupid -Wall bit (damned gnomers)
+	* nicsetup.xml: stupid required=true on prefix stuff
+	* gtkrasta/Makefile.am: AM_CPPFLAGS for _RASTA_DIR
+
+2001-08-29	Manish Singh    <manish.singh@oracle.com>
+
+	* gtkrasta/gtkrasta.c: use GTK_SELECTION_FOO instead of
+	GTK_TREE_SELECTION_FOO
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Descriptions added to the ISP listing
+
+2001-08-29	Joel Becker	<joel.becker@oracle.com>
+
+	* nicsetup.xml: Rework of the dialup stuff
+	* librasta/rastadialog.c(rasta_listcommand_run): Point STDIN
+	  at /dev/null for listcommands
+	* librasta/rastainitcommand.c(rasta_initcommand_run): Point
+	  STDIN at /dev/null for initcommands
+	* librasta/rastaexec.c(rasta_exec_command_l): Function name
+	  typo
+	* tools/rastaedit.c(add_dialog_field): New argument to
+	  gtk_tree_view_scroll_to_cell()
+	* gtkrasta/gtkrasta(all over, esp ic_*): Various fixups to
+	  changed GTK+ APIs.  Various debugging prints
+
+2001-08-22	Joel Becker	<joel.becker@oracle.com>
+
+	* rasta.dtd: Added the DEFAULTPATH element
+	* librasta/rastatraverse.c(rasta_traverse_forward):
+	  Added handling of DEFAULTPATH
+	* nicrasta/demomain.c: Added /* TIMBOIZE */ comments
+
+Mon Aug 13 11:55:19 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: actually write the settings data
+
+2001-08-10	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml, librasta/rastahidden.c,
+		librasta/rastascreen.c, librasta/rastainitcommand.c
+
+	* Fixed an INITCOMMAND bug on rasta_screen_previous
+	* Added some sanity checking to initcommand_run
+	* Fixed some shell quoting bugs in nicsetup.xml
+
+2001-08-10	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Whoops.  Forgot to check setup_* is enabled in the connection
+	  type screen.
+
+Fri Aug 10 10:45:04 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: added main button image and grayed out next
+	button
+
+2001-08-09	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Timboized fully
+
+Thu Aug  9 16:30:21 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: added check button special casing
+
+2001-08-08	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Simple "You succeeded" messages
+
+2001-08-08	Joel Becker	<joel.becker@oracle.com>
+
+	files:	gtkrasta/gtkrasta.c, nicsetup.xml
+
+	* Massive amounts of help added
+
+2001-08-02	Joel Becker	<joel.becker@oracle.com>
+
+	files:	rasta.dtd, librasta/rastaaction.c,
+		librasta/rastadialog.c, librasta/rastahidden.c,
+		nicrasta/demomain.c
+
+	* Demomain does a full display now
+	* changed ENCODING to OUTPUTENCODING in the dtd
+
+Fri Aug  3 15:58:11 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/Makefile.am: proper makefile fu for button pictures
+
+Fri Aug  3 15:43:11 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: output action text
+	
+Fri Aug  3 14:46:47 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: confirm dialog, pixmap buttons
+
+2001-08-02	Joel Becker	<joel.becker@oracle.com>
+
+	files:	rasta.dtd, librasta/rasta.h, librasta/rastaaction.c,
+		librasta/rastadialog.c, librasta/rastainitcommand.c,
+		librasta/rastascreen.h, nicrasta/demomain.c
+
+	* Added _get_encoding() calls.
+	* demomain now does some text display, and does proper
+	  truncation
+
+Thu Aug  2 16:26:03 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: fixed dumb ip address label bug
+
+Thu Aug  2 16:03:05 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: limited action stuff (need to capture output
+	still)
+
+Thu Aug  2 14:36:49 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: list flow works now
+	* nicrasta/rastarc: make things readable
+
+2001-08-01	Joel Becker	<joel.becker@oracle.com>
+
+	files:	ChangeLog
+
+	* Changed emails in ChangeLog for happiness
+
+2001-08-01	Joel Becker	<joel.becker@oracle.com>
+
+	files:	Everything, again
+
+	* Fixed up copyright headers for happiness (sorry wim)
+
+2001-08-01	Joel Becker	<joel.becker@oracle.com>
+
+	files:	Just about everything
+
+	* Bogus update for most things.  Copyright headers.
+	* Make distcheck now passes
+
+2001-07-31	Joel Becker	<joel.becker@oracle.com>
+
+	files:	tools/rastaedit.c, nicrasta/demomain.c
+
+	* rastaedit now doesn't need notebook bug hacks
+	* demomain does a little more layout now
+
+2001-07-31	Joel Becker	<joel.becker@oracle.com>
+
+	files:	librasta/rastadialog.c
+
+	* Updated rasta_verify_number_format().  It should be good now.
+
+2001-07-30	Joel Becker	<joel.becker@oracle.com>
+
+	files:	librasta/rastadialog.c
+
+	* Very first steps at a locale-safe rasta_verify_number_format()
+
+2001-07-30	Joel Becker	<joel.becker@oracle.com>
+
+	files:	configure.in, nicrasta/Makefile.am,
+		nicrasta/*.gif, nicrasta/demomain.c,
+		nicrasta/make_image_bin
+
+	* Changed configure to require gtk/glib 1.3.7
+	* Added demomain.c and its associated files.
+
+2001-07-30	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml, rasta.dtd, clrasta/clrasta.c,
+		librasta/rasta.h, librasta/rastadialog.c,
+		nicrasta/nicrasta.c, tools/rastaedit.c
+
+	* Removed the PASSWORD field type and added a HIDDEN attribute
+	  to ENTRY fields in its place.
+
+2001-07-27	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* A couple 'else if' -> 'elif' errors
+
+2001-07-27	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Removed all use of sed from the file
+
+2001-07-27	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Tweaked some initcommands for default values
+
+2001-07-26	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicrasta/nicrasta.c
+
+	* Tweaked nicrasta.c for the new initcommand_is_required() API
+	
+Thu Jul 26 08:27:12 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	* nicrasta/nicrasta.c: more stuff, need to rework the symbol
+	setting stuff. Please test against current library and nicsetup.xml
+
+2001-07-25	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Rework of email settings, should be good now
+
+2001-07-25	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml
+
+	* Final missing INITCOMMANDs
+
+2001-07-25	Joel Becker	<joel.becker@oracle.com>
+
+	files:	librasta/rasta.h, librasta/rastacontext.c,
+		librasta/rastainitcommand.c, librasta/rastascope.c,
+		librasta/rastascope.h, librasta/rastascreen.c,
+		tools/Makefile.am, tools/rastaedit.c,
+		tools/gtkrastaliststore.c, tools/gtkrastaliststore.c
+		clrasta/clrasta.c, nicsetup.xml
+
+	* Added rasta_is_initial_screen() functionality
+	* Changed rasta_initcommand_is_required() to behave better
+	* Fixed screen_cache bug in push loading.
+	* Added GtkRastaListStore, a custom TreeModel for listing
+	  RastaDialogFields in rastaedit
+	* A couple missing initializations in nicsetup.xml, more to
+	  come.
+
+2001-07-20	Joel Becker	<joel.becker@oracle.com>
+
+	files: 	librasta/rastatraverse.c, tools/rastaedit.c
+
+	* Segfault do to uninitialized variable in rasta_query_help()
+	* rastaedit now loads screens
+
+2001-07-19	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml, rasta.dtd, clrasta/clrasta.c
+
+	* Most of the validation in nicsetup.html done
+	* HIDDENSCREEN dtd change, requires INITCOMMAND
+	* clrasta handles SINGLECOLUMN
+
+2001-07-17	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml, clrasta/clrasta.c, 
+		librasta/rastascope.c, librasta/rastascreen.c
+
+	* Handles missing screens better
+
+2001-07-17	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.html, rasta.dtd, clrasta/clrasta.c,
+		librasta/Makefile.am, librasta/rasta.h,
+		librasta/rastadialog.c, librasta/rastaexec.c,
+		librasta/rastamenu.c, librasta/rastascreen.c,
+		librasta/rastascreen.h, librasta/rastatraverse.c,
+		librasta/rastahidden.c, librasta/rastahidden.h,
+		librasta/rastainitcommand.c
+
+	* Fully fleshed HIDDEN screens.
+	* Fixed the variable fix.
+
+2001-07-16	Joel Becker	<joel.becker@oracle.com>
+
+	files:	nicsetup.xml, librasta/rastaexec.c
+
+	* More setup.  Proxy stuff and browser stuff
+	* Oops, forgot to handle non-variable '#' in rastaexec.c
+
+2001-07-13	Joel Becker	<joel.becker@oracle.com>
+
+	files:	Most of 'em, see logs
+
+	* more nicsetup.xml stuff.
+	* Started tools dir
+
+2001-07-09	Joel Becker	<joel.becker@oracle.com>
+
+	files:	rasta.dtd, clrasta/clquery.c, clrasta/clrasta.c,
+		librasta/rastaaction.c, librasta/rastacontext.c,
+		librasta/rastadialog.c, librasta/rastascope.c,
+		librasta/rastatraverse.c
+
+	* Various fixes from regressions.
+	* Actually validates now
+	* Actually doesn't print stupid messages
+
+2001-07-02	Joel Becker	<joel.becker@oracle.com>
+
+	files:	clrasta/clquery.c, clrasta/clrasta.c,
+		librasta/Makefile.am, librasta/rastaaction.c,
+		librasta/rastadialog.c, librasta/rastaexec.h,
+		librasta/rastaexec.c, librasta/rastascope.c,
+		librasta/rastascreen.h, librasta/rastatraverse.c,
+		librasta/test.xml, nicrasta/Makefile.am,
+		librasta/nicrasta.c
+
+	* Exec stuff
+	* list command stuff
+	* init command stuff
+
+Wed May 30 18:01:18 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	files:	configure.in, Makefile.am, nicrasta/Makefile.am,
+		nicrasta/nicrasta.c, clrasta/clrasta.c
+
+	* Initial nicrasta landing
+
+	* missing !HAVE_READLINE gchar typo
+
+2001-05-21	Joel Becker	<joel.becker@oracle.com>
+
+	files:	configure.in, clrasta/Makefile.am, clrasta/clquery,c
+		clrasta/clrasta.c, librasta/Makefile.am,
+		librasta/rasta.h, librasta/rastacontext.c,
+		librasta/rastadialog.c, librasta/rastamenu.c,
+		librasta/rastascope.c, librasta/rastascreen.c,
+		librasta/rastatraverse.c
+
+	* Removed libunicode dependancy, and glib2 contains the
+	  functionality
+
+Sun May  6 13:34:36 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	files: configure.in
+
+	* updated to use glib 2 and xml 2 macros (tho we should really be
+	using pkg-config)
+
+Mon Apr 30 17:08:27 PDT 2001 Manish Singh <manish.singh@oracle.com>
+
+	files: librasta/rastaexec.h
+
+	* Header for helper program execution
+
+2001-04-18	Joel Becker <joel.becker@oracle.com>
+
+	files:	clrasta/clrasta.c, clrasta/clquery.c,
+		librasta/rasta.h, librasta/rastaaction.c,
+		librasta/rastadialog.c, librasta/rastamenu.c,
+		librasta/rastascreen.c, librasta/rastascreen.h,
+		librasta/test.dtd, librasta/test.xml
+
+	* Moved the SINGLECOLUMN attribute to the FIELD element
+	* Completed initialization code for LIST/ENTRYLIST
+	* Actions semi-handled in clrasta
+
+2001-04-16	Joel Becker <joel.becker@oracle.com>
+
+	files:	clrasta/clrasta.c, clrasta/clquery.[ch],
+		librasta/rasta.h, librasta/rastaaction.c,
+		librasta/rastadialog.c, librasta/rastascope.c
+		librasta/rastatraverse.c, librasta/test.xml,
+		librasta/test.dtd
+
+	* Lots of stuff, mostly no changelogs because we were hacking.
+	* Some of this is just debug prints.
+
+2001-02-20 Joel Becker <joel.becker@oracle.com>
+
+	files:	librasta/Makefile.am, librasta/rasta.h,
+		librasta/rastascope.c, librasta/rastascope.h,
+		librasta/rastamenu.c, librasta/rastamenu.h,
+		librasta/rastadialog.c, librasta/rastadialog.h,
+		librasta/rastaaction.c, librasta/rastaaction.h,
+		librasta/rastascreen.c, librasta/rastascreen.h,
+		librasta/rastacontext.c, librasta/rastacontext.h,
+		librasta/rastatraverse.h, librasta/rastatraverse.c,
+		librasta/renumeration.c, librasta/test.xml,
+		COPYING.LIB

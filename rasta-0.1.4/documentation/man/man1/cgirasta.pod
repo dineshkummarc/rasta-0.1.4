@@ -1,0 +1,55 @@
+=pod 
+
+=head1 NAME
+
+cgirasta - Display RASTA description files via the web.
+
+=head1 SYNOPSIS
+
+    cgirasta
+
+=head1 DESCRIPTION
+
+B<cgirasta> is a program that reads a description file that specifies
+screens and paths among those screens.  B<cgirasta> allows the user
+to make the choices and inputs described, and then runs an action with
+these values on behalf of the user.  B<cgirasta> uses the web as its
+medium, behaving as a CGI program underneath a web server.  It builds
+the screens as HTML pages and reads user input as form data.
+
+=head1 BUGS
+
+Surely some.
+
+=head1 SEE ALSO
+
+L<gtkrasta(1)> L<clrasta(1)>
+
+=head1 VERSION
+
+B<cgirasta> version Z<>@VERSION@ (30 November 2001)
+
+=head1 HISTORY
+
+=over 4
+
+=item Version 0.1.0
+
+Initial version.
+
+=back
+
+=head1 AUTHOR
+
+Joel Becker        E<lt>joel.beckerZ<>@oracle.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright E<169> 2001 Oracle Corporation, Joel Becker.
+All rights reserved.
+
+This program is free software; see the file COPYING in the source
+distribution for the terms under which it can be redistributed and/or
+modified.
+
+=cut

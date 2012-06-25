@@ -1,0 +1,4 @@
+usr/bin/rastaadd
+usr/bin/rastadel
+usr/bin/rastaedit
+usr/share/rasta/rasta-*/rastamodify.dtd

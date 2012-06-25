@@ -1,0 +1,2674 @@
+%% LyX 1.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[american]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ \newenvironment{lyxcode}
+   {\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}%
+    \item[]}
+   {\end{list}}
+
+\makeatother
+\begin{document}
+
+\title{The RASTA Description File}
+
+
+\author{Joel Becker}
+
+
+\date{June 12, 2002}
+
+\maketitle
+\tableofcontents{}
+
+
+\section{Introduction}
+
+This is a tutorial and reference for designing description files for
+the RASTA framework. This document should help implementers design
+XML descriptions of tasks and task sets, allowing them to use RASTA
+within their environment.
+
+
+\section{Tutorial}
+
+
+\subsection{Concepts}
+
+There are a few fundamental concepts to the RASTA system that bear
+exploring before you begin learning the format of the RASTA description
+file. The knowledge of these concepts will make understanding RASTA
+easier in the pages that follow.
+
+RASTA is essentially a system for managing tasks. A task is something
+you would like to do, and RASTA is designed to make it easy for you
+to accomplish the described task with a minimum of effort.
+
+We will start with a simple example. You want to buy a lottery ticket.
+This is a task, and an easily explainable one. You go to the nearby
+lottery location and ask for a ticket. However, it really isn't that
+simple. Which type of lottery ticket? Do you want to select your numbers,
+or do you want a computer to do it for you randomly?
+
+These separate into more distinct tasks. Say that you want to buy
+a State Lottery ticket. You want to have a chance at the big money.
+We will ignore all the other types of lottery tickets for now. Even
+when ignoring all other lotteries, you still have two tasks before
+you. The tasks are {}``Purchase a lottery ticket with chosen numbers''
+and {}``Purchase a lottery ticket with random numbers''. This is,
+then, a set of tasks that are related. To RASTA, this is a menu. You
+are given a choice of tasks, and you must select one.
+
+If you choose random numbers, everything is again easy. The lottery
+machine prints out your ticket and you are done. This is what RASTA
+calls an action. It describes how to complete a task. So far, so good.
+
+What happens if you want to select your own numbers? The lottery machine
+is now at an impasse. It doesn't know what your numbers are. What
+can it do? It has to ask you. An automated machine could present you
+with questions asking for each number. This is what RASTA calls a
+dialog. Once you have answered all the questions and told the lottery
+machine the information it needs to know, it can now proceeed. Again,
+it uses an action to complete the task. This time, the action uses
+your numbers to print the lottery ticket. This makes it a different
+action than the automatic numbers action.
+
+So far we have seen three concepts. The first is a menu. A menu is
+how RASTA presents a choice of tasks or task sets. The {}``State
+Lottery'' task set could easily be a choice on a parent menu. This
+menu might collect the {}``State Lottery'' task set as well as the
+{}``Scratch and Win'' task set.
+
+A dialog is how RASTA asks you for information it cannot discover
+on its own. A dialog necessarily contains one or more questions for
+you to answer. To RASTA, each question is called a field. A dialog
+can have one or many fields. The designer of a dialog can have three
+dialogs in succession with one field each or one dialog with three
+fields on it. Either way, the user is asked for all three pieces of
+information, allowing the task to be completed successfully.
+
+An action is how RASTA completes a task. It takes any input you have
+given to a dialog and any other information it has found for itself
+and then lets you know how your task did. Usually the task completes
+successfully. However, as this is a computer, they may not always
+complete successfully.
+
+How does RASTA let the action know of the answers given in the dialogs?
+The RASTA system keeps track of all the answers provided during dialogs
+in a symbol table. Each question has a symbol name associated with
+it. When you answer the question, the answer is stored with a given
+symbol name. When the action is executed, it has access to these symbols.
+
+
+\subsection{Building a Description}
+
+The RASTA description file is written in XML. XML is an OK format
+for describing things, but especially well suited to tree-like structures.
+In addition, most everyone has a basic understanding of XML. If you
+don't know XML, go read up on it and come back!
+
+
+\subsubsection{Basic XML Structure}
+
+Every RASTA description file will have these basic XML constructs.
+First, it will have an XML header and a document declaration:
+
+\begin{quotation}
+\texttt{\footnotesize <?xml version=''1.0'' ?>}{\footnotesize \par}
+
+\texttt{\footnotesize <!DOCTYPE RASTA}{\footnotesize \par}
+
+\texttt{\footnotesize ~~SYSTEM {}``file:///build/test/rasta/rasta-0/rasta.dtd''
+>}{\footnotesize \par}
+\end{quotation}
+This tells the XML parser that the XML is standard with XMl 1.0, the
+document is a RASTA document, and it needs to be evaluated against
+your rasta.dtd file. You will need to modify the URL for the local
+installation location of the RASTA DTD file.
+
+Every RASTA description file is enclosed in the RASTA tag. The tag
+signifies that this is a RASTA description file, and it also specifies
+the version of the file by means of the XML namespace:
+
+\begin{quotation}
+\texttt{\footnotesize <RASTA xmlns=''http://www.jlbec.org/rasta/rasta-0''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </RASTA>}{\footnotesize \par}
+\end{quotation}
+Recall that XML namespaces are labels, not necessarily existing locations.
+While jlbec.org exits, it doesn't have a file \texttt{\footnotesize /rasta/rasta-0}.
+What it signifies is that this is a RASTA file of version 0. All RASTA
+parsers that understand the version should work with all description
+files that specify it. If the format of the description file ever
+changes, the namespace will be updated as well. This allows tracking
+of compatibility between the description file format and the RASTA
+library.
+
+
+\subsubsection{Screens}
+
+RASTA interacts with the user via the concept of screens. A screen
+is a page of information and choices. Think of each stage in the lottery
+example above. The choice between the tasks {}``Purchase a lottery
+ticket with random numbers'' and {}``Purchase a lottery ticket with
+chosen numbers'' is a logical stopping point. The system has to wait
+for the user to choose one of the two tasks. This would be displayed
+by RASTA via a screen. Specificaly, this would be a menu screen. A
+menu screen is responsible for displaying a choice between related
+tasks or task sets. There are three other types of screens in the
+RASTA description file.
+
+The dialog screen displays questions to the user, providing the user
+the ability to specify input to the task. In the lottery example,
+a dialog screen was used to query the lottery numbers for the {}``Purchase
+a lottery ticket with chosen numbers'' task.
+
+The third type of screen is the action screen. The action screen is
+responsible for displaying the output and results of a task as it
+is executing and when it is complete. If the task allows for user
+interaction, that may take place in the action screen as well. Most
+tasks do not require interaction, and in fact should not. Except in
+extreme cases, a RASTA description file should obtain all input for
+a task via menu and dialog screens.
+
+The fourth screen type has not been mentioned until now. It is a hidden
+screen. Hidden screens are used to manage processing behind the scenes,
+such as testing user input. Hidden screens will be mentioned in more
+detail when we discuss initcommands.
+
+The screens of a description file are enclosed in the \textless{}SCREENS\textgreater{}
+tag
+
+\begin{quotation}
+\texttt{\footnotesize <RASTA xmlns=''http://www.jlbec.org/rasta/rasta=0''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </RASTA>}{\footnotesize \par}
+\end{quotation}
+Each screen has its own description. The centralized location of screen
+definitions allows screens to be reused and gives the RASTA library
+a convenient method of referencing them.
+
+
+\subsubsection{Describing the Lottery Menu}
+
+The menu screen describing the lottery tasks is a simple one containing
+only two choices: {}``Purchase a lottery ticket with random numbers''
+and {}``Purchase a lottery ticket with chosen numbers''. However,
+the description is even simpler:
+
+\begin{quotation}
+\texttt{\footnotesize <SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<MENUSCREEN ID=''lottery\_menu''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</MENUSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </SCREENS>}{\footnotesize \par}
+\end{quotation}
+The first thing to notice is that there is no mention of the tasks
+to choose. It's not missing, it really doesn't belong here. This XML
+defines the screen, but screens can be reused in multiple places.
+What defines the choices is the arangement of screens underneath the
+menu. If you place two tasks underneath the menu, the menu then has
+two choices.
+
+The current section is defining screens, not their relationship to
+each other. Therefore, the menu does not have its relation to following
+screens (the choices) defined here. The relationship is defined in
+the paths section of the description file. Paths are discussed later
+on in this tutorial.
+
+What about the attributes on the MENUSCREEN element? The TEXT attribute
+is pretty obvious. This is the text that describes the menu, and is
+in fact the title of the menu screen. The title {}``Purchase a lottery
+ticket'' is certainly an apt general description for the two tasks
+we are describing.
+
+The ID attribute uniquely identifies the screen. No two screens can
+have the same ID attribute. Later, when describing the paths in the
+description file, the ID will be used to reference this screen.
+
+
+\subsubsection{The Automatic Ticket Action}
+
+The easiest of our tasks is {}``Purchase a lottery ticket with random
+numbers.'' There is no iteraction required with the user. The action
+screen describing this task is likewise simple:
+
+\begin{quotation}
+\texttt{\footnotesize <SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<ACTIONSCREEN ID=''auto\_ticket\_action''
+TTY=''yes''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with random numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTIONCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~for i in 1 2 3 4 5 6}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~do}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~NUMBERS=''\$NUMBERS
+`random\_number`''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~done}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~print\_ticket \$NUMBERS}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</ACTIONCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</ACTIONSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </SCREENS>}{\footnotesize \par}
+\end{quotation}
+Simple, right? The attributes involved here are usually pretty straightforward,
+and often don't change from the defaults.
+
+The ID attribute is a unique screen identifier, just like in the MENUSCREEN
+element. The TEXT attribute signifies the title of this action. Notice
+that it is \emph{exactly} the text of the task in the menu. The path
+description, examined later in the tutorial, defines how this action
+is a child of the menu screen we just defined. When the RASTA library
+sees that this is a child of the menu, it uses the TEXT attribute
+to form the choice in the menu. In this fashion, menus are defined
+by their children, and only the path needs to be updated to reflect
+a change.
+
+The TTY attribute is also a hint to the front end. It tells the frontend
+what to expect from the task command. If the TTY attribute is {}``no'',
+the task command is assumed to send no output at all to the standard
+output and error streams. If the TTY attribute is {}``yes'', the
+task command is expected to output on the standard output and/or error
+streams. Note that in both cases, no interaction with the task via
+standard input is possible. If the task command is expecting to take
+input on standard input, the TTY attribute is set to {}``self'',
+signifying that the task command wishes to handle terminal interaction
+itself. This should be avoided at all costs. Most tasks can have information
+queried in RASTA, not during the action. The obvious exception is
+a task that requires a password. There's not much you can do except
+let the user type the password.
+
+The ACTIONCOMMAND element specifies the actual command that will be
+run to complete the task. This command is a script in the content
+area of the element. On UNIX-like systems, the command is a bourne
+shell script (/bin/sh). It is a Windows Scripting script on Windows.
+
+The end result is that the script is executed. The print\_ticket command
+run by the shell obstensibly does the right thing to create a ticket
+on the output device. The user is ready for the lottery drawing!
+
+
+\subsubsection{Choosing Numbers}
+
+If the user has opted to choose their own numbers, the description
+file now has to provide a way for them to do so. A dialog screen displays
+one or more questions to the user. The basic XML for a dialog screen
+is simple:
+
+\begin{quotation}
+\texttt{\footnotesize <SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<DIALOGSCREEN ID=''lottery\_choose\_numbers''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with chosen numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</DIALOGSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </SCREENS>}{\footnotesize \par}
+\end{quotation}
+Like the MENUSCREEN element, the DIALOGSCREEN element has only the
+ID and TEXT attributes. Like our ACTIONSCREEN element above, the TEXT
+attribute not only titles the dialog, it provides the menu option
+for the parent menu. More on that later.
+
+Notice that this dialog screen still does not seem to have anything
+to do with querying the user. It needs to know what to ask. This is
+where fields come in. A field is an entity to ask a question to a
+user and recieve a response. How a front end displays this is variable.
+A text front end might ask the question and wait for a response, while
+a graphical front end might display all the fields in a dialog screen
+as a set of widgets.
+
+Every field has a name. Because RASTA must keep track of the user's
+input, the user's answers are associated with the name in a symbol
+table. The field name is called a symbol name, and the user input
+is called the symbol value.
+
+The most basic type of field is the entry field. It accepts any text
+input from the user. To query lottery numbers, the description might
+look like this:
+
+\begin{quotation}
+\texttt{\footnotesize <DIALOGSCREEN ID=''lottery\_choose\_numbers''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with chosen numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_1'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''First
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_2'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Second
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_3'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Third
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_4'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Fourth
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_5'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Fifth
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_6'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Sixth
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize </DIALOGSCREEN>}{\footnotesize \par}
+\end{quotation}
+Field names must be unique within a dialog. They can be reused in
+unrelated dialogs and in later dialogs that override earlier ones.
+Here, the symbols {}``number\_1'' through {}``number\_6'' represent
+the values the user has input. The TEXT attribute specifies the question
+that the user is being asked. The front end will display each field's
+text and allow the user to provide a response. When the user is done
+with the dialog, the front end will associate the symbol name and
+the symbol value for each field in a symbol table that RASTA keeps
+track of.
+
+The REQUIRED attribute is relatively straighforward. If true, the
+front end will not allow the user to continue to the next screen until
+the field is filled out. In the lottery example, obviously all of
+the numbers are required before a ticket can be printed. There are
+other circumstances where some fields do not need to be filled out.
+Often tasks have suitable defaults or can ignore certain inputs if
+they are not specified.
+
+
+\subsubsection{The Chosen Numbers Action}
+
+The description file must define a second action screen, one that
+works with user supplied lottery numbers. This means that the action
+command must be made aware of the user's input:
+
+\begin{quotation}
+\texttt{\footnotesize <SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<ACTIONSCREEN ID=''chosen\_ticket\_action''
+TTY=''yes''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~CONFIRM=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with random numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTIONCOMMAND ESCAPESTYLE=''double''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~NUMBERS=''\#number\_1\#
+\#number\_2\# \#number\_3\# \#number\_4\# \#number\_5\# \#number\_6\#''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~print\_ticket \$NUMBERS}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</ACTIONCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</ACTIONSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </SCREENS>}{\footnotesize \par}
+\end{quotation}
+Notice that the field names from the dialog screen are now inside
+the action command. They are surrounded by the {}``\#'' character
+to signify to RASTA that they do indeed refer to symbol names. RASTA,
+before executing this command, will substitute the value of the associated
+symbol in the place of the {}``\#symbol\_name\#'' entity.
+
+The ACTIONCOMMAND element now has a new attribute. The ESCAPESTYLE
+attribute defines how the symbol value is placed in the command. Shell
+scripts have funny rules about special characters when they appear
+in quotation marks. The expectation is that a value substituted by
+RASTA should not be misinterperated by the shell as something fancy.
+By specifying the escape style, the description file has control over
+this. When the escape style is {}``double'', RASTA escapes all special
+characters such that if the value is substituted inside double quotation
+marks, the shell will not interperate any of them. If the escape style
+is {}``single'', RASTA escapes the characters to behave properly
+when enclosed in single quotes. When the escape styl e is {}``none'',
+RASTA does nothing and substitutes the symbol value verbatim. Here
+the symbols are substituted inside double quotation marks, so the
+escape style is {}``double''.
+
+There are a new attribute on the ACTIONSCREEN element as well. The
+CONFIRM attribute signifies whether the front end should ask the user
+for confirmation before executing the task. This is important. Imagine
+an action that deletes files or an action that submits billing information.
+You want to ask the user if they are sure they are ready for the task
+to execute.
+
+
+\subsubsection{Paths}
+
+The description file now has a defnition for each screen the user
+might see. However, there is still no connection between the screens.
+Somehow the RASTA system has to know what order to navigate the screens.
+This is where paths come in.
+
+A path is simply a description of what screen comes after another.
+Why are paths separate from screen definitions? A screen can be reused
+on multiple paths. Imagine you have a screen to ask a user their name.
+The screen description defines a title and a field with an entry.
+If you have 10 tasks that require the user's name, you would have
+to have this screen in 10 different places. By keeping the screen
+definition separate, you only need to name the screen on each of the
+10 paths.
+
+The basic rules for paths are simple. The job of a menu is to give
+the user a choice of paths, so the menu may have multiple children.
+Each child becomes a choice in the menu. The children of a menu may
+be any mixture of other menus, dialogs, or actions. An action may
+not have any children. Actions are the executable portion of the task,
+and are the task's endpoint. A dialog is a specific route along a
+task. Dialogs may have either one dialog or one action as a child.
+This allows flexibility in design. A task may have 20 fields in one
+dialog or 4 fields in each of 5 dialogs. How the questions are arranged
+is up to the designer.
+
+Paths are listed in the description file under the PATH element:
+
+\begin{quotation}
+\texttt{\footnotesize <RASTA xmlns=''http://www.jlbec.org/rasta/rasta-0''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize </RASTA>}{\footnotesize \par}
+\end{quotation}
+Every element in a path tree must reference a screen that exists in
+the screen definitions. Screens may be used on more than one branch
+of the path.
+
+
+\subsubsection{Lottery Path}
+
+Here is the path for the lottery example:
+
+\begin{quotation}
+\texttt{\footnotesize <PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<MENU NAME=''lottery\_menu''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTION NAME=''auto\_ticket\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<DIALOG NAME=''lottery\_choose\_numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<ACTION NAME=''chosen\_ticket\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</DIALOG>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</MENU>}{\footnotesize \par}
+
+\texttt{\footnotesize </PATH>}{\footnotesize \par}
+\end{quotation}
+As stated earlier, the mere existance of the {}``auto\_ticket\_action''
+and {}``lottery\_choose\_numbers'' screens as children of the {}``lottery\_menu''
+screen provide the menu choices for the lottery menu. If we added
+another screen as a child of the lottery menu, it too would become
+a menu choice.
+
+If the user chooses the automatic ticket option from the lottery menu,
+the action is immediately run. However, if the user chooses to enter
+their own numbers, they are shown the dialog that allows them to enter
+their lottery choices. Once they have filled out that dialog, they
+can then proceed to the action that prints a ticket using the input.
+Now they have a ticket in hand, and good luck to them!
+
+
+\subsubsection{Complete Example}
+
+\begin{quotation}
+\texttt{\footnotesize <?xml version=''1.0'' ?>}{\footnotesize \par}
+
+\texttt{\footnotesize <!DOCTYPE RASTA}{\footnotesize \par}
+
+\texttt{\footnotesize ~~SYSTEM {}``file:///usr/share/rasta/rasta-0/rasta.dtd''
+>}{\footnotesize \par}
+
+\texttt{\footnotesize <RASTA xmlns=''http://www.jlbec.org/rasta/rasta-0''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<MENUSCREEN ID=''lottery\_menu''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</MENUSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<DIALOGSCREEN ID=''lottery\_choose\_numbers''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with chosen numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<FIELD NAME=''number\_1''
+TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~REQUIRED=''true''
+TEXT=''First number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<FIELD NAME=''number\_2''
+TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~REQUIRED=''true''
+TEXT=''Second number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<FIELD NAME=''number\_3''
+TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~REQUIRED=''true''
+TEXT=''Third number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<FIELD NAME=''number\_4''
+TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~REQUIRED=''true''
+TEXT=''Fourth number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<FIELD NAME=''number\_5''
+TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~REQUIRED=''true''
+TEXT=''Fifth number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<FIELD NAME=''number\_6''
+TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~REQUIRED=''true''
+TEXT=''Sixth number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</DIALOGSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTIONSCREEN ID=''auto\_ticket\_action''
+TTY=''yes''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with random numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<ACTIONCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~for i in 1 2
+3 4 5 6}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~do}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~NUMBERS=''\$NUMBERS
+`random\_number`''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~done}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~print\_ticket
+\$NUMBERS}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~</ACTIONCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</ACTIONSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTIONSCREEN ID=''chosen\_ticket\_action''
+TTY=''yes''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~~~CONFIRM=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with random numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<ACTIONCOMMAND ESCAPESTYLE=''double''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~NUMBERS=''\#number\_1\#
+\#number\_2\# \#number\_3\# \#number\_4\# \#number\_5\# \#number\_6\#''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~print\_ticket
+\$NUMBERS}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~</ACTIONCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</ACTIONSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<MENU NAME=''lottery\_menu''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<ACTION NAME=''auto\_ticket\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<DIALOG NAME=''lottery\_choose\_numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~<ACTION NAME=''chosen\_ticket\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~</DIALOG>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</MENU>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize </RASTA>}{\footnotesize \par}
+\end{quotation}
+
+\subsection{Advanced Descriptions}
+
+The simple example shows the basics of what RASTA can do. A lot of
+tasks can be described with the description file capabilities discussed
+so far. There are many more things RASTA can do. The following sections
+describe them.
+
+Remember, every description file tag and its meaning are in the reference
+section.
+
+
+\subsubsection{Filling Initial Values}
+
+In the lottery example, there was a task {}``Purchase a lottery ticket
+with chosen numbers.'' This task allowed the user to enter the six
+lottery numbers they wished to pick. The task would then print a lottery
+ticket.
+
+The description defined a dialog screen to ask the user for their
+numbers. On the screen, six entry fields were provided. They were
+empty to before the user types in any input. However, a lottery application
+might wish to fill these fields in with preset numbers. For instance,
+maybe the application might place random numbers in the fields so
+that the user can start from a set of numbers and only modify a few.
+
+RASTA provides the ability to do this with the INITCOMMAND tag. If
+a dialog description has an initcommand, that command will be run
+by the front end before the dialog is displayed. The lottery dialog
+might look like this:
+
+\begin{quotation}
+\texttt{\footnotesize <DIALOGSCREEN ID=''lottery\_choose\_numbers''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with chosen numbers''>}{\footnotesize \par}
+
+~~~~\textless{}INITCOMMAND ESCAPESTYLE=''none''\textgreater{}
+
+~~~~~~~~cat \textless{}\textless{}EOF
+
+number\_1
+
+1
+
+number\_2
+
+2
+
+number\_3
+
+3
+
+number\_4
+
+4
+
+number\_5
+
+5
+
+number\_6
+
+6
+
+EOF
+
+~~~~\textless{}/INITCOMMAND\textgreater{}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_1'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''First
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_2'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Second
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_3'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Third
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_4'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Fourth
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_5'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Fifth
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_6'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~REQUIRED=''true'' TEXT=''Sixth
+number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize </DIALOGSCREEN>}{\footnotesize \par}
+\end{quotation}
+Note that the initcommand has the ESCAPESTYLE attribute like action
+commands. If this dialog were in the middle of a string of dialogs,
+the initcommand could use any symbols that a previous dialog had defined.
+
+If the initcommand exits with a successful return code, the standard
+output of the initcommand is taken to fill symbol values. The output
+is as simple line-by-line format. The first line is a symbol name.
+The next line is that symbol's value. Then the third line is another
+name, the fourth another value, and so on. In the example above, the
+output is explicitly setting number\_1=1, number\_2=2, and so on.
+
+Note that the deliniation is on a line boundary. If the symbol value
+has newlines in it, embed them as '\textbackslash{}n' as per the C
+language. the backslash is escaped as '\textbackslash{}\textbackslash{}'.
+
+If the initcommand exits with an unsuccessful return code, the front
+end will refuse to continue to the next screen and will instead go
+back to the screen it just left. The front end may or may not choose
+to display an error value. Some front ends use the standard error
+output of the initcommand as an error message.
+
+This initcommand doesn't do much. However, a lot more might be done
+in a description file that handles account management. Imagine there
+is a task {}``Modify an account's attributes''. It would be really
+painful if the user had to enter every attribute every time. An initcommand
+allows the RASTA description to query the current account attributes
+and pre-fill fields. Here, an initial dialog would query the account
+name to modify. It would then give way to the attribute dialog. The
+attribute dialog would have an initcommand that took the name and
+queried the account database to fill the attribute fields. If the
+account name did not exist, the initcommand could return nonzero and
+print an error to that effect.
+
+
+\subsubsection{Hidden Screens}
+
+There is a problem with the lottery example's number dialog. What
+happens if the user enters {}``a'' instead of {}``32'' for a lottery
+number? As it currently stands, RASTA will go all the way to running
+the task, and only then will the error be dicsovered. The program
+that prints the lottery ticket will likely return an error. The user
+will then have to back up to the number dialog to continue.
+
+This isn't the best user interface. One should report a user's errors
+as soon as they occur, allowing the user the easiest chance to fix
+them. We've already discovered how an initcommand can do value checking,
+but in this example there is no dialog following the number dialog,
+and so there is no initcommand to check the input.
+
+This is where hidden screens come in. A hidden screen is a screen
+that does not have a visual representation. They merely contain an
+initcommand. If the initcommand is successful, RASTA continues to
+the next screen. If not, RASTA backs up to the previous screen just
+like when a dialog screen has an initcommand. Hidden screens can be
+used any place in the path tree that a dialog screen can, That is,
+they can be the child of a menu, dialog, or hidden screen, and can
+have a dialog, hidden, or action screen as their child.
+
+The initcommand in a hidden screen is exactly like the initcommand
+in a dialog screen. It can fill values with the same line-oriented
+protocol. This can often be useful to pre-fill symbol values before
+any dialog has even been seen. Another possibility is to place a hidden
+screen between the menu that chooses the task and the first dialog
+of the task. This hidden screen would check if the current user has
+permission to run that task.
+
+For the lottery example, a hidden screen might look like this:
+
+\begin{quotation}
+\texttt{\footnotesize <SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<HIDDENSCREEN ID=''check\_numbers''
+TEXT=''Checking Numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<INITCOMMAND ESCAPESTYLE=''double''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~for i in {}``\#number\_1''
+{}``\#number\_2\#'' {}``\#number\_3\#'' {}``\#number\_4\#''
+{}``\#number\_5\#'' {}``\#number\_6''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~do}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~if not\_number
+{}``\$i''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~then}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~~~~~echo
+{}``Not a number: \$i!'' \&gt;\&amp;2}{\footnotesize \par}
+
+~~~~~~~~~~~~~~~~~~~~~~~exit 1
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~fi}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~done}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</INITCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</HIDDENSCREEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </SCREENS>}{\footnotesize \par}
+
+\texttt{\footnotesize <PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<DIALOG ID=''lottery\_choose\_numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<HIDDEN ID=''check\_numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~<ACTION ID=''chosen\_ticket\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~</HIDDEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</DIALOG>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </PATH>}{\footnotesize \par}
+\end{quotation}
+Here, the hidden screen's initcommand merely verifies all numbers
+are really numbers and only then will it succeed. If a value is not
+a number, the initcommand will error and the front end will likely
+display the error message.
+
+Recall the account management example in the previous section. The
+first dialog queries the account name. The next dialog uses an initcommand
+to verify the name is a valid account, and then displays the account
+attributes for modification. One could also use a hidden screen here.
+The hidden screen would sit between the dialogs and do the verification
+of the account name. Once it had verified the account name, it would
+give way to the account modification dialog screen. The dialog screen
+would still use its initcommand to pre-fill the attribute fields.
+
+Why use a hidden screen here? The second dialog's initcommand was
+doing a fine job of verifying accounts already! The reason is that
+screens are reusable. There is only one dialog that modifies attributes,
+but there might be multiple paths in the path tree that query account
+names. for instance, a task to remove accounts has to ask the name
+as well. You cannot place the attribute modification dialog screen
+in this path. You aren't modifying attributes. Instead, the remove
+account task reuses the account name dialog screen and the verify
+account hidden screen before giving way to the removal action. The
+path tree for this part might look like this:
+
+\begin{quotation}
+\texttt{\footnotesize <PATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<DIALOG NAME=''get\_account\_name''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~<HIDDEN NAME=''verify\_account\_name''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~~<ACTION NAME=''remove\_account''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~</HIDDEN>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~</DIALOG>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </PATH>}{\footnotesize \par}
+\end{quotation}
+The hidden screen verifies the account name before letting the system
+try to remove it. Also note that this is a perfect time to use the
+CONFIRM attribute on the action.
+
+
+\subsubsection{Numeric Entry Fields}
+
+We've improved our user interface by providing a user with feedback
+right after they make an error. The astute interface designer will
+note that there is often still more we can do.Why let a user enter
+a non-numeric value in the first place? If the user can only enter
+numbers, the problem will never occur.
+
+RASTA entry fields contain a simple numeric constraint mechanism.
+When defining an entry field, one can add the NUMERIC attribute. When
+this attribute is {}``true'', the front end knows not to allow any
+non-numeric characters in the field:
+
+\begin{quotation}
+\texttt{\footnotesize <DIALOGSCREEN ID=''lottery\_choose\_numbers''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~TEXT=''Purchase
+a lottery ticket with chosen numbers''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<FIELD NAME=''number\_1'' TYPE=''entry''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~}\texttt{\emph{\footnotesize ~}}\texttt{\footnotesize NUMERIC=''true''
+REQUIRED=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~TEXT=''First Number''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~...}{\footnotesize \par}
+
+\texttt{\footnotesize </DIALOGSCREEN>}{\footnotesize \par}
+\end{quotation}
+Now the rasta front end doesn't allow non-numeric characters. However,
+there are lottery numbers and then there are other numbers. Fourty-one
+is a valid lottery number in some States. Two thousand usually isn't,
+and four point five is right out.
+
+RASTA provides a FORMAT attribute for numeric entry fields. This format
+is not all-encompasing, but it is pretty flexible for restricting
+input. The number format deals with the number of digits in a number.
+For example, the number {}``22.5'' has two digits left of the decimal
+point and one digit to the right of the decimal point. The format
+syntax allows the description to specify the minimum and maximum number
+of digits to the left and right of the decimal point.
+
+If you wished to restrict the numeric input to require two digits
+left of the decimal point and one digit to the right (as with our
+number 22.5), the format would be
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''number'' TYPE=''entry'' REQUIRED=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~NUMERIC=''true'' FORMAT=''2,2.1,1''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Enter number''/>}{\footnotesize \par}
+\end{quotation}
+In the format syntax, a period ({}``.'') represents the decimal
+point no matter what locale RASTA is running in. This is a syntax.
+The front end is free to display numbers in the proper locale. The
+comma ({}``,'') represents a range separator. The format above ({}``2,2.1,1''
+) states that there must be a minimum of two numbers and a maximum
+of two numbers to the left of the decimal point. The number 22.5 fits
+this format, but the number 2.5 does not.
+
+Each side of the decimal point has a limit. In the above example,
+{}``2,2'' is the limit for digits to the left of the decimal point.
+A limit has the format of {}``minimum,maximum''. A limit may specify
+only the minimum or the maximum, leaving the unspecified portion to
+the default. A format may only specify a limit for only one side of
+the decimal point, leaving the other side to the default. The maximum
+of {}``-1'' signifies unlimited.
+
+\begin{itemize}
+\item 0,-1.0,0 The default. It specifies 0 to -1 (unlimited) digits to the
+left of the decimal point and no characters to the right are allowed.
+\item 1.0,0 The limit for the left side of the decimal point specifies no
+maximum; the default maximum of -1 (unlimited) is assumed. The left
+side has a minimum of 1 digit.
+\item ,1.0,0 The limit for the left side specifies no minimum. The default
+minimum of 0 is assumed, and the maximum is 1. The right side of the
+decimal point is still limited to zero characters.
+\item 1,9 The left side allows between 1 and 9 digits. The right side of
+the decimal point, though unspecified, defaults to no digits allowed.
+\item .1,9 The left side is unspecified and defaults to 0 to -1 (unlimited)
+allowed digits. The right side must have between 1 and 9 digits.
+\item ,0.,2 The left side specifies a maximum of 0 digits. The right side
+specifies a maximum of 2 digits. This number format would describe
+the number of cents in a dollar, for instance.
+\end{itemize}
+The proper format for the lottery example would be:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''number\_1''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TYPE=''entry'' REQUIRED=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~NUMERIC=''true'' FORMAT=''0,2.0,0''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''First Number''/>}{\footnotesize \par}
+\end{quotation}
+This limit specifies any number with zero to two digits to the left
+of the decimal point and no digits to the right. Hence, any integer
+between zero and ninety-nine is valid.
+
+Lottery numbers are usually between zero and fourty-four or so. What
+to do? You have to check your numbers in an initcommand or in the
+action command. RASTA is a general framework. The number format allows
+a lot of input control, but a general framework cannot solve every
+problem as well as it would like. It must, however, allow the problem
+to be solved somehow, and RASTA allows that via initcommands and the
+like.
+
+There is, however, a better solution. That solution will be examined
+later in the {}``Ring Fields'' section.
+
+
+\subsubsection{Text Entry Length}
+
+A numeric entry field can restrict the range of numbers it allows.
+What about a text entry? A text entry field can use the LENGTH attribute
+to restrict the amount of text entered:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''account\_name'' }{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TYPE=''entry'' REQUIRED=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~LENGTH=''8'' TEXT=''Account
+Name''/>}{\footnotesize \par}
+\end{quotation}
+This field allows up to eight characters of text entry. This would
+work well for account management systems that only allow eight characters
+in an account name. The user should not be allowed to enter fourteen
+characters if only eight will be used.
+
+
+\subsubsection{Ring Fields}
+
+Text and numeric entry is nice, but it certainly is tedious when the
+list of choices can be known ahead of time. The RASTA framework provides
+two ways to give the user a list of choices. The simplest way is the
+ring dialog field. A ring dialog field contains a list of choices
+and the text to represent them. When the front end displays the field
+to the user, the user is allowed to select one of these choices:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''account\_type'' TYPE=''ring''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''true'' TEXT=''Account
+Type''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<RINGVALUE TEXT=''Administrative account''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~~~~~~~~VALUE=''admin''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<RINGVALUE TEXT=''User account'' VALUE=''user''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<RINGVALUE TEXT=''Guest account''
+VALUE=''guest''/>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+The ring value's text will be displayed in the list of choices that
+is presented to the user. The VALUE attribute specifies what actually
+is substituted into command scripts. The user should not have to see
+the text {}``admin'', but the underlying scripts and programs might
+require that value. The TEXT attribute provides a user-friendly appearance
+for the front end's interface. A more common example is the switches
+to a command. Often a command will take a switch or argument such
+as {}``-y''. A ring value of {}``-y'' would be confusing to a
+user, but a ring value of {}``Yes'' would not:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''fsck\_questions'' TYPE=''ring''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''TRUE'' TEXT=''FSCK
+Questions''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<RINGVALUE TEXT=''Always answer yes''
+VALUE=''-y''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<RINGVALUE TEXT=''Always answer no''
+VALUE=''-n''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<RINGVALUE TEXT=''Prompt for each one''
+VALUE=''''/>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+Sure enough, fsck now gets the correct option, and a user of this
+description has no need to know what that option is.
+
+Recall the lottery numbers example. Even with numeric dialog fields
+and their format restrictions, a perfect representation of the lottery
+number range could not be specified. With a ring dialog field, it
+can:
+
+\begin{lyxcode}
+{\footnotesize <FIELD~NAME=''number\_1''~TYPE=''ring''~REQUIRED=''true''}{\footnotesize \par}
+
+~{\footnotesize ~~~~~~TEXT=''First~Number''>}{\footnotesize \par}
+
+~{\footnotesize ~~~<RINGVALUE~TEXT=''1''~VALUE=''1''/>}{\footnotesize \par}
+
+~{\footnotesize ~~~<RINGVALUE~TEXT=''2''~VALUE=''2''/>}{\footnotesize \par}
+
+~{\footnotesize ~~~...}{\footnotesize \par}
+
+~{\footnotesize ~~~<RINGVALUE~TEXT=''44''~VALUE=''44''/>}{\footnotesize \par}
+
+{\footnotesize </FIELD>}{\footnotesize \par}
+\end{lyxcode}
+Each field now provides the user with a direct choice of number. No
+more typing. This is a bit verbose on the description designer, but
+it is only done once. The user benefit is immeasurable.
+
+
+\subsubsection{List Fields}
+
+The ring dialog field is a good mechanism for providing a preset list
+of choices for a user. When the choices are known in advance, the
+user does not have to type in an answer; instead the user merely has
+to choose.
+
+There is one problem with ring dialog fields. Some choices are not
+known at the time the description file is written. An account management
+tool might have a task to remove an account. The user would have to
+know the name of the account and type it accurately if the input was
+an entry dialog field. A ring dialog field would make it easier, as
+the user would only have to select the account name. However, accounts
+are added and deleted at will, so the description file could never
+keep all the valid account names in a ring dialog field. The answer
+is the list dialog field.
+
+The list dialog field is similar to the ring dialog field from a user
+perspective. However, in the description file the list dialog field
+does not contain a list of choices. Instead, it contains a list command.
+The output of the list command becomes the choices in the list. One
+choice per line:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''delete\_name'' TYPE=''list''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''TRUE''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Account to delete''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<LISTCOMMAND ESCAPESTYLE=''none''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~list\_accounts}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</LISTCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+The command {}``list\_accounts'' is expected to output the names
+of the current accounts on the system, one per line. Each line is
+a choice in the list. The ESCAPESTYLE attribute of the LISTCOMMAND
+element behaves exactly as it does on the INITCOMMAND and ACTIONCOMMAND
+elements.
+
+What if the user wished to delete more than one account at one time?
+This may not be safe, of course, but it is conceivable. List dialog
+fields support the MULTIPLE attribute. This attribute defaults to
+false, but when set allows multiple items to be selected in a list.
+This is not possible with a ring dialog field:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''delete\_name'' TYPE=''list''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''TRUE'' MULTIPLE=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Account to delete''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<LISTCOMMAND ESCAPESTYLE=''none''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~list\_accounts}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</LISTCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+When multiple choices are selected, they will be substituted with
+a whitespace between them. They will not be one per line. So chosing
+three names will result in a value:
+
+\begin{quotation}
+\texttt{\footnotesize delete\_name=''bob sue ted''}{\footnotesize \par}
+\end{quotation}
+not:
+
+\begin{quotation}
+\texttt{\footnotesize delete\_name=''bob}{\footnotesize \par}
+
+\texttt{\footnotesize sue}{\footnotesize \par}
+
+\texttt{\footnotesize ted''}{\footnotesize \par}
+\end{quotation}
+This is important to remember when dealing with whitespace in scripts.
+
+There is one advantage the ring dialog field retains. Ring values
+have a TEXT attribute to provide user friendly display of the choices.
+List dialog fields do not. What list dialog fields do have is the
+SINGLECOLUMN attribute. When the SINGLECOLUMN attribute is true, only
+the first whitespace delineated column of a list item will actually
+be saved in the symbol value. All text after the first column will
+be ignored by the symbol table, but will be used by the front end
+when displaying to the user. The list of accounts could then read:
+
+\begin{quotation}
+\texttt{\footnotesize bob - Bob Jones}{\footnotesize \par}
+
+\texttt{\footnotesize sue - Susan Jacobs}{\footnotesize \par}
+
+\texttt{\footnotesize ted - Ted Jennings}{\footnotesize \par}
+\end{quotation}
+If all three users where selected, the resulting value would be:
+
+\begin{quotation}
+\texttt{\footnotesize delete\_name=''bob sue ted''}{\footnotesize \par}
+\end{quotation}
+Only the first column of each choice was used. The field definition
+would be:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''delete\_name'' TYPE=''list''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''TRUE'' MULTIPLE=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~SINGLECOLUMN=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Account to delete''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<LISTCOMMAND ESCAPESTYLE=''none''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~list\_accounts}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</LISTCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+
+\subsubsection{Entry List Fields}
+
+In the previous example, the description used a list command to generate
+a list of account names. This allows the user to choose from a list
+of correct names instead of requiring the user to remember the name
+and type it themselves. Usually this is a benefit to the user.
+
+On the other hand, a system with 1000 account names becomes hard to
+navigate with a list of accounts. A user who does know the name they
+wish to specify would like to type it rather than hunt the list of
+1000 names. RASTA provides the entry list dialog field for this eventuality:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''delete\_name'' TYPE=''entrylist''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''TRUE'' MULTIPLE=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~SINGLECOLUMN=''true'' LENGTH=''8''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Account to delete''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<LISTCOMMAND ESCAPESTYLE=''none''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~list\_accounts}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</LISTCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+Note that the entry list dialog field can take the attributes of the
+entry dialog field and the list dialog field. There can be numeric
+constrants for numeric entry, length constraints for text entry, and
+list definitions for the list generated.
+
+Another use of the entry list would be in a configuration tool. The
+user might choose an existing configuration from the list, or they
+may add a new configuration by typing in a new configuration name.
+
+
+\subsubsection{File Selection Fields}
+
+The file selection field is an entry field usually coupled with some
+mechanism to select filenames interactively. The method is up to the
+front end. A textual front end might do nothing or may use filename
+completion of some sort. A graphical front end could use a button
+to open a file selection widget. The file dialog field only differs
+from the entry field in providing this hint to the front end. In addition,
+the file dialog field does not support numeric entry restrictions
+(the NUMERIC attribute and friends). Not many filenames are only numbers.
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''upload\_file'' TYPE=''file''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''File to Upload''/>}{\footnotesize \par}
+\end{quotation}
+
+\subsubsection{Read Only Fields}
+
+A read only dialog field provides a way to display the value of a
+symbol without allowing the user to change it. An account management
+tool might provide a task to modify the attributes of an account.
+The first dialog in this task would query the name of the account.
+The following dialog would use an initcommand to prefill the current
+attributes of the account and would provide dialog fields to edit
+these attributes. It would be convenient to the user to provide a
+listing of the selected account name, but the user cannot change the
+name in this dialog:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''account\_name'' TYPE=''readonly''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Account Name''/>}{\footnotesize \par}
+\end{quotation}
+
+\subsubsection{Description Fields}
+
+Often more description is necessary to guide the user. Rasta provides
+a description dialog field. This field is displayed without any regard
+to user entry. The TEXT attribute of the description dialog field
+is the description that is displayed:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''modify\_account\_description''
+TYPE=''description''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Use this screen to modify
+the attributes of this account''/>}{\footnotesize \par}
+\end{quotation}
+
+\subsubsection{Help Text}
+
+Field names are short. Menu choices, while longer, are not always
+long enough to provide all the information an unfamiliar user requires
+to successfully navigate the tasks. Help text provides this functionality.
+
+All screen types and dialog fields can take a HELP element as their
+first child. When the a menu or dialog is displayed, the front end
+provides the ability to query the help for each menu item or dialog
+field. A dialog field for a new account name might have the following
+help:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''account\_name'' TYPE=''entry''
+LENGTH=''8''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~REQUIRED=''true'' TEXT=''Account
+Name''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<HELP>}{\footnotesize \par}
+
+\texttt{\footnotesize Enter the name of the new account here. This
+name must begin with a letter and contain only letters and numbers. The
+name may have at most eight (8) characters.}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</HELP>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+The front end would provide a method to query this field's help. When
+selected, the help text would be displayed for the user.
+
+
+\subsubsection{Output Encodings}
+
+RASTA description files are always in the UTF-8 encoding. The scripts
+RASTA executes are converted to the current locale before being passed
+to the script interpreter. The output of these scripts is almost always
+in the current locale as well, and RASTA front ends convert this back
+to UTF-8 before using the results.
+
+However, there is are rare occasions where a script or command might
+output text that is not in the current locale. In this case, RASTA
+will get the conversion wrong, and garbage text or an error will result.
+The description file handles this with the OUTPUTENCODING attribute.
+The OUTPUTENCODING attribute is valid on LISTCOMMAND, INITCOMMAND,
+and ACTIONCOMMAND elements. The default value of the OUTPUTENCODING
+attribute is {}``system'', which merely means to use the current
+locale. If specified, the RASTA system will use the OUTPUTENCODING
+attribute to convert the output from the init, list, or action command
+to UTF-8 before using it in the RASTA system.
+
+When might this matter? A description file on a system running in
+the en\_US locale might wish to display lines from a file generated
+in the ru\_RU locale. The en\_US locale defaults to an encoding of
+ISO-8859-1, but the ru\_RU locale uses the KIO8-R encoding. If the
+RASTA system tries to translate the Russian text to UTF-8 as if it
+were encoded in ISO-8859-1, an error eill result. By specifying an
+output encoding of KIO8-R, the RASTA system knows to translate the
+text from KIO8-R.
+
+There is one case RASTA cannot handle by itself. If the output of
+a command or script will be in multiple encodings, RASTA cannot guess
+which parts. The only answer is for the script itself to handle the
+encoding conversion until the entire output is in one encoding. RASTA
+can then convert using this single encoding.
+
+
+\subsubsection{Fast Paths}
+
+The lottery example dealt only with the large prize lottery. We intentionally
+ignored all the other lottery types for simplicity. A real lottery
+system would likley have a menu hierarchy like so:
+
+\begin{quotation}
+{\footnotesize Lottery System}{\footnotesize \par}
+\begin{quotation}
+{\footnotesize Print a Scratch and Win Ticket}{\footnotesize \par}
+
+{\footnotesize Print a Pick Four Ticket}{\footnotesize \par}
+\begin{quotation}
+{\footnotesize Print a Pick Four Ticket With Random Numbers}{\footnotesize \par}
+
+{\footnotesize Print a Pick Four Ticket With Chosen Numbers}{\footnotesize \par}
+\end{quotation}
+{\footnotesize Print a Big Money Ticket}{\footnotesize \par}
+\begin{quotation}
+{\footnotesize Print a Big Money Ticket With Random Numbers}{\footnotesize \par}
+
+{\footnotesize Print a Big Money Ticket With Chosen Numbers}{\footnotesize \par}
+\end{quotation}
+\end{quotation}
+\end{quotation}
+This list should be easily understood. The last set of choices is
+in fact the description we've been working on since the start of the
+tutorial. One could, in fact, build a lottery ticket kiosk with such
+a description file. Anyone could then happily select their ticket
+and take their chance.
+
+What if you wanted a kiosk that only handled the Big Money tickets?
+The easiest idea is to copy only the Big Money portions of the description
+file into a new description file. That new file would be exactly what
+we created in the earlier examples. There are a few problems, of course.
+If you change one description file, you have to remember to change
+the other. If you are doing something more complex than a lottery
+system, it may be far more difficult to excise the right portions.
+
+RASTA provides a better solution. RASTA provides a way to pre-choose
+some menu items. This is known as a fast path. A kiosk that only wished
+to provide Big Money tickets would use a fast path to pre-select the
+{}``Print a Big Money Ticket'' menu item. The first screen a user
+sees would be that menu, with the {}``Random'' and {}``Chosen''
+options.
+
+How does one tell the front end what fast path to choose? The front
+ends distributed with RASTA accept the screen name as the fast path
+on the command line. Other front ends might do it differently.
+
+Not all screens can be accessed with a fast path. One could not jump
+straight to the action screen for {}``Chosen Numbers'', as the numbers
+need to be selected first. The FASTPATH attribute defines this relationship.
+The FASTPATH attribute can exist on any MENUSCREEN, DIALOGSCREEN,
+or ACTIONSCREEN. It defaults to {}``true,'' meaning the screen can
+be accessed via a fast path. When a screen cannot be skipped, the
+FASTPATH attribute should be set to {}``false.'' The RASTA system
+will not allow the front end to skip the screen or any beneath it.
+
+
+\subsubsection{Dynamic Paths}
+
+Recall that the ring dialog field has one major limitation: all choices
+must be known when the description file is created. The list dialog
+field alliviates this problem with a dynamic set of choices.
+
+The same can be said of menu items. The list of tasks to choose from
+and the paths to take to complete them can be enumerated in menu items
+almost all of the time. However, every once in a while this does not
+work. The choice of path to complete a task depends on user input
+outside of a menu choice. In other words, input into a dialog field
+that is stored in the symbol table.
+
+The RASTA description file provides the MULTIPATH element to allow
+this. A lottery system requires a user to pay for their lottery ticket.
+They can pay with credit card or with cash. Each credit card requires
+the system to do something different. The menu hierarchy might look
+like this:
+
+\begin{quotation}
+{\footnotesize Purchase a Big Money Ticket with Random Numbers}{\footnotesize \par}
+\begin{quotation}
+{\footnotesize Purchase with a Credit Card}{\footnotesize \par}
+\begin{quotation}
+{\footnotesize Purchase with Visa}{\footnotesize \par}
+
+{\footnotesize Purchase with MasterCard}{\footnotesize \par}
+\end{quotation}
+{\footnotesize Purchase with Cash}{\footnotesize \par}
+\end{quotation}
+\end{quotation}
+This is just for randomly chosen tickets. The menu hierarchy is repeated
+for the user chosen path. This is not a bad thing in and of itself.
+It provides a clear line of choices for the user. It may be a little
+more verbose to type, but the user is paramount.
+
+However, there is still a problem. What happens if the lottery system
+wishes to add American Express? With this method, each occurrence
+of the payment choices requires modification.
+
+A better solution is to place the type of credit card as a dialog
+field. It can be a list dialog field, and the list command can merely
+output a file containing the list of all valid credit cards:
+
+\begin{quotation}
+\texttt{\footnotesize <FIELD NAME=''credit\_card'' TYPE=''list''
+REQUIRED=''true''}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~TEXT=''Credit Card Type'' SINGLECOLUMN=''true''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<LISTCOMMAND ESCAPESTYLE=''none''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~cat /usr/share/lottery/credit\_types.txt}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</LISTCOMMAND>}{\footnotesize \par}
+
+\texttt{\footnotesize </FIELD>}{\footnotesize \par}
+\end{quotation}
+After the user selects their card type, it would be stored in the
+symbol {}``credit card.'' The description still has to follow a
+different path for each card type. Here the MULTIPATH element comes
+into play:
+
+\begin{quotation}
+\texttt{\footnotesize <DIALOG NAME=''card\_type''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<MULTIPATH SYMBOL=''credit\_card''
+VALUE=''visa''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTION NAME=''visa\_card\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</MULTIPATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<MULTIPATH SYMBOL=''credit\_card''
+VALUE=''mastercard''>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTION NAME=''mastercard\_action''/>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~</MULTIPATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~<DEFAULTPATH>}{\footnotesize \par}
+
+\texttt{\footnotesize ~~~~~~~~<ACTION NAME=''default\_card\_action''/>}{\footnotesize \par}
+
+\texttt{~~~~</DEFAULTPATH>}
+
+\texttt{\footnotesize </DIALOG>}{\footnotesize \par}
+\end{quotation}
+The MULTIPATH element works in sequential order. The first MULTIPATH
+tag is examined. If the symbol named has the matching value in the
+symbol table, the path beneath the MULTIPATH will be followed. If
+the symbol value does not match, the next MULTIPATH element will be
+checked. Finally, if a DEFAULTPATH element is found, the path underneath
+the DEFAULTPATH element will be followed. DEFAULTPATH elements are
+not required, but a description should be designed so that at least
+one MULTIPATH or DEFAULTPATH element on the same level of the same
+path will match.
+
+
+\section{Reference}
+
+
+\subsection{Toplevel Elements}
+
+
+\subsubsection{The PATH Element}
+
+The PATH element is the parent for the path structure. This structure
+defines the various ways that the system can navigate through the
+screens. The description file must contain definitions for all of
+the screens referenced in the path structure.
+
+\begin{itemize}
+\item Attributes
+
+
+NONE
+
+\item Child Elements
+
+
+The PATH element must have one and only one MENU or DIALOG element
+as its child.
+
+\item Child Text
+
+
+The PATH element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The PATHINSERT Element}
+
+The PATHINSERT element defines a section of path to be added to the
+path structure of the main description file. Multiple PATHINSERT elements
+are allowed in an addition file. The addition file must contain definitions
+for all of the screens that are not in the main description file already.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item NAME
+
+
+The NAME attribute contains the tree of PATH elements that this addition
+is to nest beneath. Names are separated by a forward slash ('/').
+For example, a tree contains the path {}``select\_task\_type -\textgreater{}
+select\_backup\_task''. The addition description wants to add a screen
+{}``restore\_files'' beneath that. The NAME attribute on the PATHINSERT
+element would be {}``select\_task\_type/select\_backup\_task''.
+
+\end{itemize}
+\item Child Elements
+
+
+The PATHINSERT element may have any number of MENU, DIALOG, or ACTION
+children.
+
+\item Child Text
+
+
+The PATHINSERT element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The RASTA Element}
+
+The RASTA element is the toplevel element of a description file.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item xmlns
+
+
+This is the XML namespace for the document. RASTA 1.0 description
+files have the namespace {}``http://www.jlbec.org/rasta/v1''.
+
+\end{itemize}
+\item Child Elements
+
+
+The RASTA element must have one SCREENS element. A regular description
+file must also have exactly one PATH element. A file specifying an
+addition to the descriptions must have more than zero PATHINSERT elements.
+
+\item Child Text
+
+
+The RASTA element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The SCREENS Element}
+
+The SCREENS element is the parent for all screen definitions.
+
+\begin{itemize}
+\item Attributes
+
+
+NONE
+
+\item Child Elements
+
+
+The SCREENS element may have any number of MENUSCREEN, DIALOGSCREEN,
+HIDDENSCREEN, and ACTIONSCREEN children. It can, in fact, have no
+children at all, though this makes for a rather useless description
+file.
+
+\item Child Text
+
+
+The SCREENS element may not have any child text.
+
+\end{itemize}
+
+\subsection{Screen Definition Elements}
+
+
+\subsubsection{The ACTIONCOMMAND Element}
+
+The ACTIONCOMMAND element describes the actual action to be executed
+for a given task.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ESCAPESTYLE
+
+
+The ESCAPESTYLE attribute specifies the quoting behavior of symbol
+substitution. There are three possible values. If set to {}``double'',
+substituted symbols are quoted with the expectation they are inside
+double quotes. If {}``single'', the expectation is to substitute
+the value inside single quotes. If {}``none'', no quoting occurs
+and the symbol's value is substituted verbatim.
+
+The default escape style is {}``none''.
+
+\item OUTPUTENCODING
+
+
+This specifies the locale encoding of any output from the action.
+
+The default is {}``system'', which tells the frontend to expect
+the system's default encoding.
+
+\end{itemize}
+\item Child Elements
+
+
+The ACTIONCOMMAND element may not have any children.
+
+\item Child Text
+
+
+The child text of an ACTIONCOMMAND is the script to run for this action.
+This is Bourne Shell script text on Unix systems and Windows Scripting
+text on Windows systems. See the section describing scripts for rules
+regarding script capabilities.
+
+\end{itemize}
+
+\subsubsection{The ACTIONSCREEN Element}
+
+The ACTIONSCREEN element describes the action to be executed for a
+given task.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ID
+
+
+The ID is a unique name identifying this screen. It may only contain
+letters and numbers.
+
+\item TEXT
+
+
+The TEXT attribute is the text description of this screen. It will
+be used as the title of this screen when the screen is current. It
+will also be used as the menu item for this screen in the menu above
+it.
+
+\item TTY
+
+
+The TTY attribute specifies the input and output behavior of the action.
+If set to {}``yes'', the action is expected to produce output on
+standard out and/or standard error. If {}``no'', no output is expected,
+and any that occurs will be thrown away. Both of these disallow any
+input to be read by the action. If input or any other special terminal
+handling is required, the value should be {}``self'', to indicate
+that the action will handle its own input and output. The action should
+be executed in an independant terminal window. For example, in an
+X environment the action might be started in an Xterm.
+
+This attribute defaults to {}``yes''.
+
+\item CONFIRM
+
+
+If set to {}``true'', the front-end should confirm the user really
+wishes to proceed before executing this action. The action should
+be executed immediately if set to {}``false''.
+
+The default value is {}``false''.
+
+\end{itemize}
+\item Child Elements
+
+
+The ACTIONSCREEN element may have zero or one HELP elements and is
+required to have an ACTIONCOMMAND child.
+
+\item Child Text
+
+
+The ACTIONSCREEN is not allowed to have any child text.
+
+\end{itemize}
+
+\subsubsection{The DIALOGSCREEN Element}
+
+The DIALOGSCREEN element defines a screen of questions to ask the
+user. This screen can contain many questions or merely one. Questions
+are asked in the form of fields, represented by FIELD elements. If
+an INITCOMMAND child exists, it is run before displaying the screen.
+This allows the system to load values for symbols. These values can
+be used to pre-fill the fields before displaying them to the user.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ID
+
+
+The ID is a unique name identifying this screen. It may only contain
+letters and numbers.
+
+\item TEXT
+
+
+The TEXT attribute is the text description of this screen. It will
+be used as the title of this screen when the screen is current. It
+will also be used as the menu item for this screen in the menu above
+it.
+
+\item FASTPATH
+
+
+The FASTPATH attribute is either {}``true'' or {}``false''. If
+true, a user can launch the RASTA application directly to this screen.
+If false, the user cannot do so, nor can the user ever launch directly
+to any screens below this one in the path structure.
+
+This attribute should be false on all screens that require information
+from a previous screen. Otherwise, if the user launches directly to
+this screen, the required previous screen will be skipped and the
+information will not be there.
+
+The default value is {}``true''.
+
+\end{itemize}
+\item Child Elements
+
+
+The DIALOGSCREEN element may have zero or one HELP elements, zero
+or one INITCOMMAND elements, and any number of FIELD elements as children.
+
+\item Child Text
+
+
+The DIALOGSCREEN element is not allowed to have any child text.
+
+\end{itemize}
+
+\subsubsection{The FIELD Element}
+
+The FIELD element describes a field in a dialog. It provides text
+for requesting the information from the user and some type of widget
+to appropriately allow the user to answer. This may merely be an entry
+box for simple queries or a file selection dialog for files.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item NAME
+
+
+The name of the field. This is also the name of the symbol that will
+correspond with this value. The symbol may have been defined in an
+earlier screen, either via an INITCOMMAND or user input. If this is
+the case, the front-end should pre-fill the field with the already
+known value for this symbol. The creator of the description file should
+be careful about the lifetime of the symbols defined. 
+
+\item TEXT
+
+
+The text that will be displayed to the user next to the field.
+
+\item TYPE
+
+
+The field type specifies the behavior of the field. Different entry
+requirements require different behaviors. The types allowed should
+handle all general cases. The various types are as follows:
+
+\begin{itemize}
+\item readonly
+
+
+The TEXT and the value for the symbol NAME are displayed in a readonly
+fashion.
+
+\item description
+
+
+The TEXT of this field will be displayed for additional descriptive
+purposes.
+
+\item entry
+
+
+A space is provided for the user to type in the value.
+
+\item list
+
+
+The field has a LISTCOMMAND child. When requested, the front-end will
+run the script in the LISTCOMMAND element. The output from the script
+will become a list of choices for the user. See the LISTCOMMAND element
+for more information.
+
+\item entrylist
+
+
+A combination of the {}``entry'' and {}``list'' types, the {}``entrylist''
+type allows the user to type in a value or choose from the script
+generated list.
+
+\item ring
+
+
+A list is created for the user to choose a value from. Unlike the
+{}``list'' type, the choices are not generated by a script, but
+are instead hardcoded in the description file via RINGCOMMAND elements.
+This type is useful for predetermined values.
+
+\item file
+
+
+The field should provide some way of entering a file name. This can
+be via user input, a file dialog, or anything the front-end implementer
+feels is appropriate.
+
+\end{itemize}
+\item REQUIRED
+
+
+If {}``true'', the field must have a value before the user can continue
+onto the next screen. If {}``false'', this restriction does not
+apply.
+
+This attribute defaults to {}``false''.
+
+\item HIDDEN
+
+
+This attribute only applies to {}``entry'' type fields. If HIDDEN
+is {}``true'', then text entered by the user will not be displayed.
+This is useful for passwords and the like.
+
+This attribute defaults to {}``false''.
+
+\item NUMERIC
+
+
+This attribute only applies to {}``entry'' and {}``entrylist''
+type fields. If {}``true'', the field only accepts numeric input.
+All numeric input is assumed to be arabic numerals.
+
+This attribute defaults to {}``false''.
+
+\item LENGTH
+
+
+This attribute only applies to {}``entry'' and {}``entrylist''
+type fields where the attribute NUMERIC is {}``false''. It specifies
+the maximum length of a value entered by the user. If the LENGTH is
+0, any amount of input is allowed.
+
+This attribute defaults to {}``0'' (any length allowed).
+
+\item FORMAT
+
+
+This attribute only applies to {}``entry'' and {}``entrylist''
+type fields where the attribute NUMERIC is {}``true''. It specifies
+the format of the number to be entered. The format is specified as
+the limit of numbers before and after the decimal point. These limits
+are a range of numbers.
+
+Imagine an entry that wants a value between \$1.00 and \$999.99. There
+is a range of one to three digits before the decimal point, and a
+requirement of exactly two digits after the decimal point. The FORMAT
+attribute would be specified as {}``1,3.2,2''. The left half, {}``1,3'',
+specifies a minimum of one digit and a maximum of three digits to
+the left of the decimal point. The right half, {}``2,2'', specifies
+a minimum and maximum of two digits, hence exactly two digits.
+
+The range value {}``-1'' signifies any number of digits. If the
+entry in our example was to allow an infinite amount of money to be
+entered, the FORMAT attribute would be {}``1,-1.2,2''.
+
+If only one number is given for a range, it is a minimum. The FORMAT
+{}``8'' is equivalent to {}``8,-1''. If there is a {}``,'',
+it is a maximum. The FORMAT {}``,8'' is equivalent to {}``0,8''.
+If there is no {}``.'', the range is applied to the left of the
+the decimal point. If there is, it is applied to the right of the
+decimal point. Ergo, {}``3,9'' is equivalent to {}``3,9.0,0''
+and {}``.3,9'' is equivalent to {}``0,-1.3,9''. 
+
+The default value is {}``0,-1.0,0''. This means any amount of digits
+to the left of the decimal point and no digits to the right, ie. any
+Integer.
+
+\item MULTIPLE
+
+
+This attribute only applies to {}``list'' and {}``entrylist''
+type fields. If {}``true'', the user may select more than one response
+from the list of choices. These choices will be separated by spaces
+when placed into the symbol table.
+
+This attribute defaults to {}``false''.
+
+\item SINGLECOLUMN
+
+
+This attribute only applies to {}``list'' and {}``entrylist''
+type fields. A LISTCOMMAND may generate list choices that have more
+than one word in them. If the SINGLECOLUMN attribute is {}``true'',
+only the first word (whitespace delineated) will be used in the resulting
+value. If it is {}``false'', the entire line will be used.
+
+This is useful to provide descriptive text next to choices. Imagine
+an employee is selecting their job role. The system uses the value
+{}``itspec'' to mean I/T Specialist. If the employee sees the choice
+{}``itspec'', they will likely not know that this is the correct
+answer. However, if the choice is {}``itspec - I/T Specialists and
+System Administrators'', then the employee can see the proper choice.
+The SINGLECOLUMN attribute assures that only the {}``itspec'' portion
+of the choice is used.
+
+This attribute defaults to {}``false''.
+
+\end{itemize}
+\item Child Elements
+
+
+The FIELD element can have zero or one INITCOMMAND children, zero
+or one HELP children, and any number of FIELD children.
+
+\item Child Text
+
+
+The FIELD element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The HELP Element}
+
+HELP elements appear throughout the description allowing detailed
+help to be attached to all of the different structures.
+
+\begin{itemize}
+\item Attributes
+
+
+NONE
+
+\item Child Elements
+
+
+The HELP element is not permitted to have any child elements.
+
+\item Child Text
+
+
+The child text of a HELP element is the actual help text to be displayed
+to the user when requested.
+
+\end{itemize}
+
+\subsubsection{The HIDDENSCREEN Element}
+
+The HIDDENSCREEN element exists merely to run a {}``hidden'' INITCOMMAND
+script. This script can be used to validate some user input or to
+add more data to the list of known symbols.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ID
+
+
+The ID is a unique name identifying this screen. It may only contain
+letters and numbers.
+
+\item TEXT
+
+
+The TEXT attribute is the text description of this screen. It will
+be used as the title of this screen when the screen is current. It
+will also be used as the menu item for this screen in the menu above
+it.
+
+\end{itemize}
+\item Child Elements
+
+
+The HIDDENSCREEN element must have one and only one INITCOMMAND child.
+
+\item Child Text
+
+
+The HIDDENSCREEN element is not permitted to have any child text.
+
+\end{itemize}
+
+\subsubsection{The INITCOMMAND Element}
+
+The INITCOMMAND element specifies a script to run to initialize symbol
+values or perform other tasks. The standard output of a successful
+INITCOMMAND is line-oriented. The first line is the name of the symbol,
+the second line is the value. This repeats for all the symbols for
+which the initcommand wishes to set values. If the INITCOMMAND exits
+non-zero, the standard output is ignored, and any standard error output
+is used as an error message.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ESCAPESTYLE
+
+
+The ESCAPESTYLE attribute specifies the quoting behavior of symbol
+substitution. There are three possible values. If set to {}``double'',
+substituted symbols are quoted with the expectation they are inside
+double quotes. If {}``single'', the expectation is to substitute
+the value inside single quotes. If {}``none'', no quoting occurs
+and the symbol's value is substituted verbatim.
+
+\item OUTPUTENCODING
+
+
+This specifies the locale encoding of any output from the action.
+
+The default is {}``system'', which tells the frontend to expect
+the system's default encoding.
+
+\end{itemize}
+\item Child Elements
+
+
+The INITCOMMAND element may not have any child elements.
+
+\item Child Text
+
+
+The child text is the script to run. This is Bourne Shell script text
+on Unix systems and Windows Scripting text on Windows systems. See
+the section describing scripts for rules regarding script capabilities.
+
+\end{itemize}
+
+\subsubsection{The LISTCOMMAND Element}
+
+The LISTCOMMAND element specifies a script to run to create a list
+of choices for a FIELD of type {}``list'' or {}``entrylist''.
+The standard output of a successful LISTCOMMAND is line-oriented.
+Each line is a item for the user to choose from. If the LISTCOMMAND
+exits non-zero, the standard output is ignored, and any standard error
+output is used as an error message.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ESCAPESTYLE
+
+
+The ESCAPESTYLE attribute specifies the quoting behavior of symbol
+substitution. There are three possible values. If set to {}``double'',
+substituted symbols are quoted with the expectation they are inside
+double quotes. If {}``single'', the expectation is to substitute
+the value inside single quotes. If {}``none'', no quoting occurs
+and the symbol's value is substituted verbatim.
+
+\item OUTPUTENCODING
+
+
+This specifies the locale encoding of any output from the action.
+
+The default is {}``system'', which tells the frontend to expect
+the system's default encoding.
+
+\end{itemize}
+\item Child Elements
+
+
+The INITCOMMAND element may not have any child elements.
+
+\item Child Text
+
+
+The child text is the script to run. This is Bourne Shell script text
+on Unix systems and Windows Scripting text on Windows systems. See
+the section describing scripts for rules regarding script capabilities.
+
+\end{itemize}
+
+\subsubsection{The MENUSCREEN Element}
+
+The MENUSCREEN element describes a menu. It provides the title text
+for the screen and any help associated with this screen. The contents
+of the menu are the children of the associated MENU tag in the path
+structure.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item ID
+
+
+The ID is a unique name identifying this screen. It may only contain
+letters and numbers.
+
+\item TEXT
+
+
+The TEXT attribute is the text description of this screen. It will
+be used as the title of this screen when the screen is current. It
+will also be used as the menu item for this screen in the menu above
+it.
+
+\item FASTPATH
+
+
+The FASTPATH attribute is either {}``true'' or {}``false''. If
+true, a user can launch the RASTA application directly to this screen.
+If false, the user cannot do so, nor can the user ever launch directly
+to any screens below this one in the path structure.
+
+This attribute should be false on all screens that require information
+from a previous screen. Otherwise, if the user launches directly to
+this screen, the required previous screen will be skipped and the
+information will not be there.
+
+The default value is {}``true''.
+
+\end{itemize}
+\item Child Elements
+
+
+The MENUSCREEN element is allowed to have zero or one HELP elements
+as children.
+
+\item Child Text
+
+
+The MENUSCREEN element is not allowed to have any child text.
+
+\end{itemize}
+
+\subsubsection{The RINGVALUE Element}
+
+The RINGVALUE element represents a choice for a field of type {}``ring''.
+Fields of the {}``ring'' type have a discrete, predetermined set
+of choices. The RINGVALUE allows the user to see a nice value, and
+the system to see whatever value is required by the action.
+
+Imagine a program that takes {}``1'' if it is to perform validity
+checking, or {}``0'' if not. The user could be given a field that
+says {}``Perform validity checking, 1 or 0?'', or the user could
+be given a field that says {}``Perform validity checking, yes or
+no?''. Obviously the second display is easier to understand. The
+RINGVALUE element maps the {}``yes'' the user sees to the {}``1''
+the action expects.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item TEXT
+
+
+The text the user will see in the front-end. In the example, this
+would be {}``yes''.
+
+\item VALUE
+
+
+The actual value that will be used. When the user selects {}``yes'',
+the value {}``1'' would actually be stored in the symbol table.
+
+\end{itemize}
+\item Child Elements 
+
+
+The RINGVALUE element may not have any child elements.
+
+\item Child Text
+
+
+The RINGVALUE element may not have any child text.
+
+\end{itemize}
+
+\subsection{Path Definition Elements}
+
+
+\subsubsection{The ACTION Element}
+
+The ACTION element refers to an ACTIONSCREEN definition. ACTION elements
+are the final elements down a given path.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item NAME
+
+
+The ID of the ACTIONSCREEN this element refers to.
+
+\end{itemize}
+\item Child Elements
+
+
+The ACTION element may not have any child elements.
+
+\item Child Text
+
+
+The ACTION element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The DEFAULTPATH Element}
+
+The DEFAULTPATH element provides a default choice in conjunction with
+the MULTIPATH element.
+
+\begin{itemize}
+\item Attributes
+
+
+NONE
+
+\item Child Elements
+
+
+The DEFAULTPATH element may have one DIALOG child, one HIDDEN child,
+one ACTION child, or a MULTIPATH/DEFAULTPATH grouping.
+
+\item Child Text
+
+
+The DEFAULTPATH element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The DIALOG Element}
+
+The DIALOG element refers to an DIALOGSCREEN definition. 
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item NAME
+
+
+The ID of the DIALOGSCREEN this element refers to.
+
+\end{itemize}
+\item Child Elements
+
+
+The DIALOG element may one DIALOG child, one HIDDEN child, one ACTION
+child, or a MULTIPATH/DEFAULTPATH grouping.
+
+\item Child Text
+
+
+The DIALOG element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The HIDDEN Element}
+
+The HIDDEN element refers to an HIDDENSCREEN definition. 
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item NAME
+
+
+The ID of the HIDDENSCREEN this element refers to.
+
+\end{itemize}
+\item Child Elements
+
+
+The HIDDEN element may one DIALOG child, one HIDDEN child, one ACTION
+child, or a MULTIPATH/DEFAULTPATH grouping.
+
+\item Child Text
+
+
+The HIDDEN element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The MENU Element}
+
+The MENU element refers to an MENUSCREEN definition. The children
+of the MENU element represent the choices of the MENUSCREEN when it
+is displayed.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item NAME
+
+
+The ID of the MENUSCREEN this element refers to.
+
+\end{itemize}
+\item Child Elements
+
+
+The MENU element may have any number of MENU, DIALOG, HIDDEN, and/or
+ACTION children.
+
+\item Child Text
+
+
+The MENU element may not have any child text.
+
+\end{itemize}
+
+\subsubsection{The MULTIPATH Element}
+
+The MULTIPATH element allows the path to diverge based on the value
+of a symbol. If the symbol and value of a MULTIPATH element match
+what is currently in the symbol table, the MULTIPATH's child will
+be the next screen. If no MULTIPATH element in a grouping matches,
+the DEFAULTPATH element's child is followed.
+
+\begin{itemize}
+\item Attributes
+
+\begin{itemize}
+\item SYMBOL
+
+
+The name of the symbol to compare
+
+\item VALUE
+
+
+The value to check for.
+
+\end{itemize}
+\item Child Elements
+
+
+The MULTIPATH element may one DIALOG child, one HIDDEN child, one
+ACTION child, or a MULTIPATH/DEFAULTPATH grouping.
+
+\item Child Text
+
+
+The MULTIPATH element may not have any child text.
+
+\end{itemize}
+
+\subsection{Scripts}
+
+The RASTA definition file uses scripting to access the system in many
+places. The action that implements a task is a script. Initialization
+scripts allow the screens to pre-fill values. Dynamic lists of choices
+are built from scripts. This is a powerful feature to provide a customized
+and useful environment.
+
+
+\subsubsection{Execution Environment}
+
+Scripts are executed with the same environment that the RASTA application
+has. There is no real endeavour to restrict them, as their privilege
+needs are unpredictable. The implementer on a given system is responsible
+for setting up roles and restrictions.
+
+Scripts on Un{*}x systems are Bourne Shell text. The scripts are executed
+inside \texttt{/bin/sh}. Windows systems use Windows Scripting. Any
+valid syntax for these environments is accepted. The writer of the
+description file has to make sure that the script text is properly
+escaped for XML.
+
+LISTCOMMAND and INITCOMMAND scripts are run with standard input directed
+from /dev/null. Standard output and error are collected. If the script
+exits with a return code of 0, the standard output data is used. If
+the script exits nonzero, the standard output data is thrown out,
+and the standard error data may be used as an error message. 
+
+LISTCOMMAND output is used to generate a list of choices for the user.
+Each line of output is an individual choice. INITCOMMAND output is
+used to fill values in the symbol table. Each odd line is a symbol
+name, and the following even line is the value for the symbol.
+
+ACTION scripts are run with standard input, output, and error behavior
+defined by the TTY attribute. If the TTY attribute is {}``yes'',
+then the application collects the output and error data to possibly
+display to the user. If {}``no'', the application merely throws
+the data away, because it isn't expecting any. If the TTY attribute
+is {}``self'', the application lets the script handle its own data,
+and does not interfere.
+
+
+\subsubsection{Symbol Substitution}
+
+Actions exist to take user input and do something with it. It stands
+to reason that there needs to be some way to get the user's input
+into the script for the action. This is accomplished by symbol substitution.
+RASTA scripting uses a simple scheme for substituting symbols.
+
+Symbol names are not allowed to have spaces, or the character {}``\#''.
+In addition, the character {}``\#'' is a comment in the script text
+anyway. A symbol is named in a script by surrounding it with {}``\#''
+characters. A symbol named {}``\texttt{user\_name}'' would be used
+in the script as {}``\texttt{\#user\_name\#}''. When the script
+is reached in the path, the RASTA system substitutes the current value
+of \texttt{user\_name} into the script. The script can then make use
+of the value as it wishes. The following example illustrates using
+the \texttt{user\_name} symbol to add a user to the employee database.
+
+\begin{quote}
+\texttt{\#!/bin/sh}
+
+USER=''\#user\_name\#''
+
+if {[} ! -z {}``\$USER'' {]}
+
+then
+
+~~~~/usr/local/emp\_methods/add\_user {}``\$USER''
+
+fi
+\end{quote}
+The value for \texttt{user\_name} is substituted and is then set into
+the variable \texttt{\$USER}. Note also that this particular script
+places double quotes around the symbol name. The value will be inside
+those quotes when the script is run, so it must be escaped properly.
+This is accomplished by the ESCAPESTYLE attribute.
+
+
+\subsubsection{Symbol Escape Styles}
+
+Modern shells usually have special rules for the evaluation of strings
+inside single or double quotes. Some characters are special in those
+environments, others are not. Values in the RASTA symbol table have
+no special characteristics of their own. They are merely text strings.
+When they are substituted into the shell script, the shell may find
+some of the characters in the value to be of special significance
+and evaluate them accordingly. The writer of the script may wish for
+this to happen, or they may find it an unwanted side effect. The ESCAPESTYLE
+attribute is provided for this reason. 
+
+The ESCAPESTYLE attribute can be set to the values {}``single'',
+{}``double'', or {}``none''. The value {}``none'' is the simplest;
+all symbols are substituted exactly as they exist in the symbol table.
+The values {}``single'' and {}``double'' correspond to single
+and double quotes, respectively. When set, the RASTA system makes
+the assumption that all values will be evaluated inside the given
+quoting type. During script preparation, any characters known to be
+special to the given quoting type will be escaped. The script will
+see these characters as normal characters instead of giving them special
+meaning. The following example shows a symbol \texttt{dollar\_string}
+being substituted into a double-quoted environment on a Unix system.
+The \texttt{dollar\_string} symbol has the value {}``\$2.00'', but
+the character {}``\$'' is special to the shell.
+
+\begin{itemize}
+\item In the description file:
+
+
+\texttt{DOLLAR\_VAL=''\#dollar\_string\#''}
+
+\item How the script appears at runtime:
+
+
+\texttt{DOLLAR\_VAL=''\textbackslash{}\$2.00''}\end{itemize}
+
+\end{document}

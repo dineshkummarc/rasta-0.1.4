@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!ELEMENT RASTACGICONF (PREFERENCE*)>
+<!ATTLIST RASTACGICONF xmlns CDATA #REQUIRED>
+<!ELEMENT PREFERENCE EMPTY>
+<!ATTLIST PREFERENCE NAME NMTOKEN #REQUIRED>
+<!ATTLIST PREFERENCE VALUE CDATA #REQUIRED>
+
+<!--
+Defined preferences:
+
+usermodify:
+The usermodify preference determines what users have permission to add
+and change users to the system.  The possible values are:
+admin - only admin users can add and modify users
+user  - regular users can modify their own information, but only
+        admin users may add new users
+none  - anyone may add themselves as a user and modify their
+        information.
+-->
+

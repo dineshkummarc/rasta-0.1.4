@@ -1,0 +1,80 @@
+=pod
+
+=head1 NAME
+
+rastadel - Remove items from RASTA description files.
+
+=head1 SYNOPSIS
+
+    rastadel [--file <system_file>] [-v | --verbose] <deletion_file>
+
+    rastadel -h
+
+=head1 DESCRIPTION
+
+B<rastadel> is a tool to remove screens and paths from RASTA description
+files.  It deletes the specified screens and paths, then validates the
+resulting description file.  If the file is valid, it then saves the
+new version. 
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--file E<lt>system_fileE<gt>> 
+
+Specifies the description file to act on.  This defaults to
+Z<>@RASTA_DIR@/system.rasta.
+
+=item B<-h | --help>
+
+Display help text and exit.
+
+=item B<-v | --verbose>
+
+Describes what it is doing in a verbose manner.
+
+=item B<E<lt>deletion_fileE<gt>>
+
+Specifies the file describing what to delete from the main description
+file.
+
+=back
+
+=head1 SEE ALSO
+
+L<rastaadd(1)>
+
+=head1 NOTES
+
+B<rastadel> also accepts the GNU-style --help and --version options in
+order to behave as expected in those situations.
+
+=head1 VERSION
+
+B<rastadel> version Z<>@VERSION@ (30 November 2001)
+
+=head1 HISTORY
+
+=over 4
+
+=item Version 0.1.0
+
+Initial version.
+
+=back
+
+=head1 AUTHOR
+
+Joel Becker        E<lt>joel.becker@oracle.com<gt>
+
+=head1 COPYRIGHT
+
+Copyright E<169> 2001 Oracle Corporation, Joel Becker.
+All rights reserved.
+
+This program is free software; see the file COPYING in the source
+distribution for the terms under which it can be redistributed and/or
+modified.
+
+=cut

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!DOCTYPE RASTA
+  SYSTEM "file:@DTD_LOCATION@/rasta.dtd">
+<RASTA xmlns="http://www.jlbec.org/rasta/rasta-0">
+    <SCREENS>
+        <MENUSCREEN ID="top" TEXT="Welcome to System Management">
+        </MENUSCREEN>
+        <MENUSCREEN ID="manage_devices" TEXT="Manage Devices">
+        </MENUSCREEN>
+        <MENUSCREEN ID="manage_accounts" TEXT="Manage Accounts">
+        </MENUSCREEN>
+        <MENUSCREEN ID="manage_users" TEXT="Manage Users"> 
+        </MENUSCREEN>
+        <DIALOGSCREEN ID="add_user" TEXT="Add a User">
+            <HELP>
+    This item allows you to add a
+    new user to the system.
+            </HELP>
+            <FIELD NAME="user_name" TYPE="entry" LENGTH="10" TEXT="User to Create" REQUIRED="true">
+            <HELP>
+Enter the login name for the new user.
+This is an alphanumeric string of 1-10 characters, starting with
+a letter.
+            </HELP>
+            </FIELD>
+            <FIELD NAME="primary_group" TYPE="entrylist" TEXT="Primary Group" REQUIRED="false" SINGLECOLUMN="false">
+                <LISTCOMMAND ESCAPESTYLE="none">
+                    /usr/bin/awk -F: '{print $1}' &lt; /etc/group
+                </LISTCOMMAND>
+            </FIELD>
+            <FIELD NAME="groups" TYPE="entrylist" TEXT="Group List" REQUIRED="false" SINGLECOLUMN="false" MULTIPLE="true">
+                <LISTCOMMAND ESCAPESTYLE="none">
+                    /usr/bin/awk -F: '{print $1}' &lt; /etc/group
+                </LISTCOMMAND>
+            </FIELD>
+            <FIELD NAME="office" TYPE="ring" TEXT="Office Number" REQUIRED="false">
+                <RINGVALUE TEXT="Room 313" VALUE="313"/>
+                <RINGVALUE TEXT="Room 314" VALUE="314"/>
+                <RINGVALUE TEXT="Room 315" VALUE="315"/>
+            </FIELD>
+            <FIELD NAME="phone_number" TYPE="entry" TEXT="Phone Number" REQUIRED="false">
+            </FIELD>
+            <FIELD NAME="salary" TYPE="entry" NUMERIC="true" FORMAT="0,-1.2,2" TEXT="Salary" REQUIRED="true">
+            </FIELD>
+            <FIELD NAME="profile" TYPE="file" TEXT="Shell profile" REQUIRED="false"/>
+            <FIELD NAME="profile1" TYPE="entry" TEXT="Volume" REQUIRED="false"/>
+            <FIELD NAME="profile2" TYPE="file" TEXT="Shell profile" REQUIRED="false"/>
+            <FIELD NAME="profile3" TYPE="file" TEXT="Shell profile" REQUIRED="false"/>
+            <FIELD NAME="profile4" TYPE="file" TEXT="Shell profile" REQUIRED="false"/>
+        </DIALOGSCREEN>
+        <DIALOGSCREEN ID="modify_user_get_name" TEXT="Modify a User">
+            <FIELD NAME="user_name" TYPE="entrylist" TEXT="User to Modify" REQUIRED="true" MULTIPLE="false" SINGLECOLUMN="false">
+                <LISTCOMMAND ESCAPESTYLE="none">
+                    /usr/bin/awk -F: '{print $1}' &lt; /etc/passwd
+                </LISTCOMMAND>
+            </FIELD>
+        </DIALOGSCREEN>
+        <DIALOGSCREEN ID="modify_user_main" TEXT="Modify a User" FASTPATH="false">
+            <INITCOMMAND ESCAPESTYLE="none">
+                cat &lt;&lt;EOF
+primary_group
+root
+office
+313
+phone_number
+100
+salary
+10.00
+EOF
+            </INITCOMMAND>
+            <FIELD NAME="user_name" TYPE="readonly" TEXT="User to Modify">
+            </FIELD>
+            <FIELD NAME="primary_group" TYPE="entrylist" TEXT="Primary Group" REQUIRED="false" SINGLECOLUMN="false">
+                <LISTCOMMAND ESCAPESTYLE="none">
+                    /usr/bin/awk -F: '{print $1}' &lt; /etc/group
+                </LISTCOMMAND>
+            </FIELD>
+            <FIELD NAME="office" TYPE="ring" TEXT="Office Number" REQUIRED="false">
+                <RINGVALUE TEXT="Room 313" VALUE="313"/>
+                <RINGVALUE TEXT="Room 314" VALUE="314"/>
+                <RINGVALUE TEXT="Room 315" VALUE="315"/>
+            </FIELD>
+            <FIELD NAME="phone_number" TYPE="entry" TEXT="Phone Number" REQUIRED="false">
+            </FIELD>
+        </DIALOGSCREEN>
+        <ACTIONSCREEN ID="modify_user_action" TTY="yes" CONFIRM="true"
+                      TEXT="Changing User">
+            <ACTIONCOMMAND ESCAPESTYLE='none'>
+                /usr/sbin/chuser -g '#primary_group#' -o '#office#' -p '#phone_number#' '#user_name#'
+            </ACTIONCOMMAND>
+        </ACTIONSCREEN>
+        <ACTIONSCREEN ID="add_user_action" TTY="yes" CONFIRM="false"
+                      TEXT="Adding User">
+            <ACTIONCOMMAND ESCAPESTYLE='none'>
+                echo name = '#user_name#' grou = '#primary_group#' \
+                     office = '#office#' phone = '#phone_number#' \
+                     salary = '#salary#' profile = '#profile#' \
+                     volume = '#profile1#'
+            </ACTIONCOMMAND>
+        </ACTIONSCREEN>
+        <ACTIONSCREEN ID="delete_user_action" TTY="yes" CONFIRM="false"
+                      TEXT="Removing User">
+            <ACTIONCOMMAND ESCAPESTYLE='single'>
+                /usr/sbin/deluser '#user_name#'
+            </ACTIONCOMMAND>
+        </ACTIONSCREEN>
+        <DIALOGSCREEN ID="delete_user_get_name" TEXT="Delete a User">
+            <HELP>
+    This item allows you to remove a
+    user from the system.
+            </HELP>
+            <FIELD NAME="user_name" TYPE="entry" LENGTH="10" TEXT="User to Delete" REQUIRED="true">
+            </FIELD>
+        </DIALOGSCREEN>
+        <MENUSCREEN ID="manage_groups" TEXT="Manage Groups">
+        </MENUSCREEN>
+        <MENUSCREEN ID="manage_filesystems" TEXT="Manage Filesystems">
+        </MENUSCREEN>
+    </SCREENS>
+    <PATH>
+        <MENU NAME="top">
+            <MENU NAME="manage_devices">
+            </MENU>
+            <MENU NAME="manage_accounts">
+                <MENU NAME="manage_users">
+                    <DIALOG NAME="add_user">
+                        <ACTION NAME="add_user_action"/>
+                    </DIALOG>
+                    <DIALOG NAME="modify_user_get_name">
+                        <DIALOG NAME="modify_user_main">
+                            <ACTION NAME="modify_user_action"/>
+                        </DIALOG>
+                    </DIALOG>
+                    <DIALOG NAME="delete_user_get_name">
+                        <ACTION NAME="delete_user_action"/>
+                    </DIALOG>
+                </MENU>
+                <MENU NAME="manage_groups">
+                </MENU>
+            </MENU>
+            <MENU NAME="manage_filesystems">
+            </MENU>
+        </MENU>
+    </PATH>
+</RASTA>

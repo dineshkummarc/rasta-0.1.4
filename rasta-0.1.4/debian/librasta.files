@@ -1,0 +1,3 @@
+usr/lib/librasta*.so.*
+usr/share/rasta/rasta-*/rasta.dtd
+usr/share/rasta/rasta-*/rastastate.dtd

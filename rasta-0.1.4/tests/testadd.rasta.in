@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTAMODIFY
+  SYSTEM "file:@DTD_LOCATION@/rastamodify.dtd" >
+<RASTAMODIFY xmlns="http://www.jlbec.org/rasta/rasta-0">
+    <SCREENINSERT>
+	<MENUSCREEN ID='top2' TEXT='Welcome 2'>
+	</MENUSCREEN>
+	<MENUSCREEN ID='top3' TEXT='Welcome 2'>
+	</MENUSCREEN>
+    </SCREENINSERT>
+    <PATHINSERT PATH="/top/manage_devices">
+        <MENU NAME="top2">
+           <MENU NAME="top3">
+           </MENU>
+        </MENU>
+        <MENU NAME="manage_users">
+        </MENU>
+    </PATHINSERT>
+</RASTAMODIFY>

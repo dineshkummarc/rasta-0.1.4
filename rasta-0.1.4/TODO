@@ -1,0 +1,5 @@
+
+o Both clrasta and gtkrasta handle data to and from librasta properly,
+  but the encoding and translation of some user interaction text is not
+  properly massaged
+o Make rastaedit work.

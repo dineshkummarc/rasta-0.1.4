@@ -1,0 +1,384 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTA
+  SYSTEM "file://@DTD_LOCATION@/rasta.dtd" >
+<RASTA xmlns="http://www.jlbec.org/rasta/rasta-0">
+  <SCREENS>
+    <MENUSCREEN ID='top' TEXT='Red Hat Package Management'/>
+    <MENUSCREEN ID='rpm_db_query'
+                TEXT='Work With Installed Packages'>
+      <HELP>
+Perform tasks and queries on the packages currently installed on your system.
+      </HELP>
+    </MENUSCREEN>
+    <MENUSCREEN ID='rpm_dir_query'
+                TEXT='Work With Packages to Install'>
+      <HELP>
+Perform tasks and queries on packages not yet installed on your system.
+      </HELP>
+    </MENUSCREEN>
+    <MENUSCREEN ID='rpm_update'
+                TEXT='Update Your System&apos;s Software'>
+      <HELP>
+Update your system&apos;s software levels without having to select each and every package.
+      </HELP>
+    </MENUSCREEN>
+    <DIALOGSCREEN ID='rpm_dir_list'
+                  TEXT='List Packages Available for Installation'>
+      <HELP>
+Display all the packages available for installation in a given directory
+      </HELP>
+      <INITCOMMAND ESCAPESTYLE='none'>
+          echo "pkg_dir"
+          pwd
+      </INITCOMMAND>
+      <FIELD NAME='pkg_dir' TYPE='file' REQUIRED='false'
+             TEXT='Directory to examine for packages'>
+        <HELP>
+This is the directory you wish to look at to query for installable packages.
+        </HELP>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_dir_info'
+                  TEXT='Display Information About Installable Packages'>
+      <HELP>
+Display information about selected available packages.
+      </HELP>
+      <INITCOMMAND ESCAPESTYLE='none'>
+          echo "pkg_dir"
+          pwd
+      </INITCOMMAND>
+      <FIELD NAME='pkg_dir' TYPE='file' REQUIRED='false'
+             TEXT='Directory to examine for packages'>
+        <HELP>
+This is the directory you wish to look at to query installable packages.
+        </HELP>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_dir_upgrade'
+	          TEXT='Upgrade Packages'>
+      <HELP>
+Upgrade packages on the system.
+      </HELP>
+      <INITCOMMAND ESCAPESTYLE='none'>
+          echo "pkg_dir"
+          pwd
+      </INITCOMMAND>
+      <FIELD NAME='pkg_dir' TYPE='file' REQUIRED='false'
+             TEXT='Directory to examine for packages'>
+        <HELP>
+This is the directory you wish to look at packages to upgrade.
+        </HELP>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_dir_inst'
+                  TEXT='Install Packages'>
+      <HELP>
+Install packages on the system.
+      </HELP>
+      <INITCOMMAND ESCAPESTYLE='none'>
+          echo "pkg_dir"
+          pwd
+      </INITCOMMAND>
+      <FIELD NAME='pkg_dir' TYPE='file' REQUIRED='false'
+             TEXT='Directory to examine for packages'>
+        <HELP>
+This is the directory you wish to look at to query installable packages.
+        </HELP>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_dir_info_select'
+                  TEXT='Display Information About Installable Packages'>
+      <FIELD NAME='pkg_list' TYPE='entrylist' REQUIRED='true'
+             TEXT='Retrieve information on these packages'
+             MULTIPLE='true'>
+        <HELP>
+Select the packages you wish to see detailed information on.
+        </HELP>
+        <LISTCOMMAND ESCAPESTYLE='single'>
+            cd '#pkg_dir#'
+            if [ "$?" != "0" ]
+            then
+                echo "Unable to change to directory \""'#pkg_dir#'"\"." \
+                    &gt;&amp;2
+                exit 1
+            fi
+            ls *.rpm 2&gt;/dev/null
+        </LISTCOMMAND>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_db_info_select'
+                  TEXT='Display Information About Installed Packages'>
+      <HELP>
+Display detailed information about specific installed packages.
+      </HELP>
+      <FIELD NAME='pkg_list' TYPE='entrylist' REQUIRED='true'
+             TEXT='Retrieve information on these packages'
+             MULTIPLE='true'>
+        <HELP>
+Select the packages you wish to see detailed information on.
+        </HELP>
+        <LISTCOMMAND ESCAPESTYLE='single'>
+            rpm -qa
+        </LISTCOMMAND>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_db_remove'
+                  TEXT='Remove Packages From the System'>
+      <HELP>
+Select packages to remove from the system.
+      </HELP>
+      <INITCOMMAND ESCAPESTYLE='none'>
+          echo "nodeps"
+          echo "no"
+      </INITCOMMAND>
+      <FIELD NAME='remove_desc' TYPE='description'
+          TEXT='This being a demonstration, the command will be run with &apos;--test&apos;.  No packages will actually be removed'/>
+      <FIELD NAME='pkg_list' TYPE='entrylist' REQUIRED='true'
+             TEXT='Packages to remove'
+             MULTIPLE='true'>
+        <HELP>
+Select the packages you wish to remove from the system.
+        </HELP>
+        <LISTCOMMAND ESCAPESTYLE='single'>
+            rpm -qa
+        </LISTCOMMAND>
+      </FIELD>
+      <FIELD NAME='nodeps' TYPE='ring' REQUIRED='false'
+             TEXT='Ignore dependancy problems'>
+        <HELP>
+If 'yes', RPM will ignore any dependancy problems created by removing
+this package.  It is safest to say 'no' here.
+        </HELP>
+        <RINGVALUE TEXT='No' VALUE='no'/>
+        <RINGVALUE TEXT='Yes' VALUE='yes'/>
+      </FIELD>
+    </DIALOGSCREEN>
+    <DIALOGSCREEN ID='rpm_dir_inst_select'
+                  TEXT='Install Packages'>
+      <HELP>
+Select packages to install on the system.
+      </HELP>
+      <INITCOMMAND ESCAPESTYLE='none'>
+          echo "nodeps"
+          echo "no"
+          echo "force"
+          echo "no"
+      </INITCOMMAND>
+      <FIELD NAME='inst_desc' TYPE='description'
+          TEXT='This being a demonstration, the command will be run with &apos;--test&apos;.  No packages will actually be installed'/>
+      <FIELD NAME='pkg_list' TYPE='entrylist' REQUIRED='true'
+             TEXT='Packages to install'
+             MULTIPLE='true'>
+        <HELP>
+Select the packages you wish to install on the system.
+        </HELP>
+        <LISTCOMMAND ESCAPESTYLE='single'>
+            cd '#pkg_dir#'
+            if [ "$?" != "0" ]
+            then
+                echo "Unable to change to directory \""'#pkg_dir#'"\"." \
+                    &gt;&amp;2
+                exit 1
+            fi
+            ls *.rpm 2&gt;/dev/null
+        </LISTCOMMAND>
+      </FIELD>
+      <FIELD NAME='force' TYPE='ring' REQUIRED='false'
+             TEXT='Force installation'>
+        <HELP>
+If 'yes', RPM will ignore any problems created by already
+existing files and the like.  It is safest to say 'no' here.
+        </HELP>
+        <RINGVALUE TEXT='No' VALUE='no'/>
+        <RINGVALUE TEXT='Yes' VALUE='yes'/>
+      </FIELD>
+      <FIELD NAME='nodeps' TYPE='ring' REQUIRED='false'
+             TEXT='Ignore dependancy problems'>
+        <HELP>
+If 'yes', RPM will ignore any dependancy problems created by installing
+this package.  It is safest to say 'no' here.
+        </HELP>
+        <RINGVALUE TEXT='No' VALUE='no'/>
+        <RINGVALUE TEXT='Yes' VALUE='yes'/>
+      </FIELD>
+    </DIALOGSCREEN>
+    <!-- Note that all RPM actions are with the test option
+         in this example file. -->
+    <ACTIONSCREEN ID='do_rpm_db_remove' TTY='yes'
+                  TEXT='Remove Packages From the System'>
+        <ACTIONCOMMAND ESCAPESTYLE='single'>
+            PACKAGES='#pkg_list#'
+            if [ '#nodeps#' = 'yes' ]
+            then
+                NODEPS='--nodeps'
+            else
+                NODEPS=
+            fi
+            echo rpm --test -e $NODEPS $PACKAGES
+            rpm --test -e $NODEPS $PACKAGES
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_rpm_db_list' TTY='yes'
+                  TEXT='Display All Currently Installed Packages'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            echo rpm -qa
+            rpm -qa
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_rpm_dir_list' TTY='yes'
+                  TEXT='Display Installable Packages'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            cd '#pkg_dir#'
+            if [ "$?" != "0" ]
+            then
+                echo "Unable to change to directory \""'#pkg_dir#'"\"." \
+                    &gt;&amp;2
+                exit 1
+            fi
+
+            # FIXME, I'm *sure* rpm has a better way to do this natively
+	    ls *.rpm 2&gt;/dev/null
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_rpm_db_info' TTY='yes'
+                  TEXT='Display Information About Installed Packages'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            PACKAGES='#pkg_list#'
+            echo rpm -qi $PACKAGES
+            rpm -qi $PACKAGES
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_rpm_dir_info' TTY='yes'
+                  TEXT='Display Information About Installable Packages'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            cd '#pkg_dir#'
+            if [ "$?" != "0" ]
+            then
+                echo "Unable to change to directory \""'#pkg_dir#'"\"." \
+                    &gt;&amp;2
+                exit 1
+            fi
+    
+            PACKAGES='#pkg_list#'
+            echo rpm --test -qip $PACKAGES
+            rpm --test -qip $PACKAGES
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_rpm_dir_inst' TTY='yes'
+                  TEXT='Install Packages'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            cd '#pkg_dir#'
+            if [ "$?" != "0" ]
+            then
+                echo "Unable to change to directory \""'#pkg_dir#'"\"." \
+                    &gt;&amp;2
+                exit 1
+            fi
+
+            if [ '#nodeps#' = 'yes' ]
+            then
+                NODEPS="--nodeps"
+            else
+                NODEPS=
+            fi
+            if [ '#force#' = 'yes' ]
+            then
+                FORCE='--force'
+            else
+                FORCE=
+            fi
+            PACKAGES='#pkg_list#'
+            echo rpm --test $NODEPS $FORCE -iv $PACKAGES
+            rpm --test $NODEPS $FORCE -iv $PACKAGES
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='do_rpm_dir_upgrade' TTY='yes'
+                  TEXT='Upgrade Packages'>
+        <ACTIONCOMMAND ESCAPESTYLE='single' OUTPUTENCODING='ISO-8859-1'>
+            cd '#pkg_dir#'
+            if [ "$?" != "0" ]
+            then
+                echo "Unable to change to directory \""'#pkg_dir#'"\"." \
+                    &gt;&amp;2
+                exit 1
+            fi
+    
+	    echo rpm --test -Fv *.rpm
+	    rpm --test -Fv *.rpm
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+    <ACTIONSCREEN ID='about_output' TTY='yes'
+        TEXT='Choose this after exploring all the other screens'>
+        <ACTIONCOMMAND ESCAPESTYLE='none'>
+            cat &lt;&lt;EOF
+    Were this merely another RPM management program, it would be
+completely uninteresting.  I used RPM merely as an example set that
+would be easy to understand.  The program knows nothing at all about
+RPM.  All of the screens are defined in the example file
+redhat-package.xml that you are currently using.  If you read it, it is
+a simple yet powerful screen definition system.  You can do pretty much
+anything with it.  There is a corresponding debian-package.xml file
+here too.  This system is also used for the New Internet Computer web
+appliance.  
+    Another neat bit is that the frontend is completely arbitrary.  The
+package contains the GTK+ frontend (gtkrasta/gtkrasta), a
+command line frontend (clrasta/clrasta), and a cgi frontend
+(cgirasta/cgirasta)  These frontends are all built on top of the
+librasta library which is the entire backend.  It is rather trivial to
+do another frontend in any widget set/style one chooses.
+    Also in the package are the unfinished editing tools in the tools/
+subdirectory.  tools/rastaedit is a GUI editor for the description
+files.  Even cooler are rastaadd and rastadel.  The idea is that you
+can take small sections of description file and add them to the main
+one.  This is designed for package management.  Say that Red Hat decides
+to use this system for its configuration.  They write up a nice
+description file and ship it with the base Red Hat system for the Rasta
+frontend to consume.  All good so far.  But what happens if they have
+menus for an optionally installed package?  Without rastaadd, they have
+to include the menus in the main description, and provide error
+checking if the user follows those menu paths.  With rastaadd, they
+merely include the menu descriptions inside the optional package, and
+when they optional package is installed, they use rastaadd to insert
+the optional menus into the main description file.  rastadel works in
+reverse when the optional subpackage is removed.
+    If you do find it interesting, have fun with it.  If not, let me
+know why.
+EOF
+        </ACTIONCOMMAND>
+    </ACTIONSCREEN>
+  </SCREENS>
+  <PATH>
+    <MENU NAME='top'>
+      <MENU NAME='rpm_db_query'>
+        <ACTION NAME='do_rpm_db_list'/>
+        <DIALOG NAME='rpm_db_info_select'>
+          <ACTION NAME='do_rpm_db_info'/>
+        </DIALOG>
+        <DIALOG NAME='rpm_db_remove'>
+          <ACTION NAME='do_rpm_db_remove'/>
+        </DIALOG>
+      </MENU>
+      <MENU NAME='rpm_dir_query'>
+        <DIALOG NAME='rpm_dir_list'>
+          <ACTION NAME='do_rpm_dir_list'/>
+        </DIALOG>
+        <DIALOG NAME='rpm_dir_info'>
+          <DIALOG NAME='rpm_dir_info_select'>
+            <ACTION NAME='do_rpm_dir_info'/>
+          </DIALOG>
+        </DIALOG>
+        <DIALOG NAME='rpm_dir_inst'>
+          <DIALOG NAME='rpm_dir_inst_select'>
+            <ACTION NAME='do_rpm_dir_inst'/>
+          </DIALOG>
+        </DIALOG>
+      </MENU>
+      <MENU NAME='rpm_update'>
+	<DIALOG NAME='rpm_dir_upgrade'>
+	  <ACTION NAME='do_rpm_dir_upgrade'/>
+	</DIALOG>
+      </MENU>
+      <ACTION NAME='about_output'/>
+    </MENU>
+  </PATH>
+</RASTA>

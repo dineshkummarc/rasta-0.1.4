@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTA
+  SYSTEM "file:@DTD_LOCATION@/rasta.dtd" >
+<RASTA xmlns="http://www.jlbec.org/rasta/rasta-0">
+    <SCREENS>
+        <MENUSCREEN ID='top' TEXT='Welcome to RASTA'>
+        </MENUSCREEN>
+        <ACTIONSCREEN ID='read_me_first' TTY='yes' CONFIRM='false'
+                      TEXT='Read Me First'>
+            <HELP>
+This is a RASTA menu item.  To follow it, select it and then click
+the "Next" button.
+            </HELP>
+            <ACTIONCOMMAND ESCAPESTYLE='none'>
+                cat &lt;&lt;EOCAT
+Welcome to RASTA.  This is a default system.rasta file.  It contains
+this README message and a welcome from us, the developers.
+
+Chances are you are looking to provide a more complete system via
+RASTA.  If you have your own .rasta file to use, you can either tell
+the frontends about it, or you can copy it over this file.  See the
+reference documentation for instructions on how to build a .rasta file.
+
+Thank you for choosing RASTA!
+EOCAT
+            </ACTIONCOMMAND>
+        </ACTIONSCREEN>
+    </SCREENS>
+    <PATH>
+        <MENU NAME='top'>
+            <ACTION NAME='read_me_first'/>
+        </MENU>
+    </PATH>
+</RASTA>

@@ -1,0 +1,188 @@
+#
+# Spec file for RASTA
+#
+
+# Macros
+# This one is hardcoded because, well, it belongs there
+%define _prefix /usr
+# This is to make RPM not be stupid
+%define _unpackaged_files_terminate_build 0
+
+
+Summary: The RASTA system libraries
+Name: rasta
+Version: @VERSION@
+Release: 1
+Copyright: LGPL
+Group: Applications/File
+Source: http://oss.oracle.com/projects/rasta/dist/files/rasta-@VERSION@.tar.gz
+URL: http://oss.oracle.com/projects/rasta/
+Distribution: CALPG
+Vendor: Oracle Corporate Architecture Linux Projects Group
+Packager: Joel Becker <joel.becker@oracle.com>
+
+BuildRoot: %{_tmppath}/rasta-%{PACKAGE_VERSION}-%{PACKAGE_RELEASE}-root
+
+#Patch001: rasta-0.1-cgibug.patch
+
+%description
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+
+%package -n librasta
+Summary: The RASTA system libraries
+Copyright: LGPL
+Group: Applications/File
+Requires: glib2 >= 2.0.1, libxml2 >= 2.4.19
+BuildRequires: glib2-devel >= 2.0.1, libxml2-devel >= 2.4.19
+AutoReqProv: no
+
+%description -n librasta
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+
+%package -n librasta-devel
+Summary: Development files for RASTA
+Copyright: LGPL
+Group: Applications/File
+Requires: librasta = %{version}
+AutoReqProv: no
+Requires: glib2 >= 2.0.1, libxml2 >= 2.4.19
+BuildRequires: glib2-devel >= 2.0.1, libxml2-devel >= 2.4.19
+
+%description -n librasta-devel
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+
+%package -n clrasta
+Summary: Command-line frontend to the RASTA system
+Copyright: GPL
+Group: Applications/File
+Provides: rasta-frontend
+AutoReqProv: no
+Requires: librasta >= %{version}, glib2 >= 2.0.1, libxml2 >= 2.4.19, readline >= 4.2
+BuildRequires: glib2-devel >= 2.0.1, libxml2-devel >= 2.4.19, readline-devel >= 4.2
+
+%description -n clrasta
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+
+%package -n gtkrasta
+Summary: GTK+ frontend to the RASTA system
+Copyright: GPL
+Group: Applications/File
+Provides: rasta-frontend
+Requires: librasta >= %{version}, gtk2 >= 2.0.1, pango >= 1.0.1, atk >= 1.0.1, glib2 >= 2.0.1, libxml2 >= 2.4.19, gdk-pixbuf, XFree86-libs >= 4.1.0
+BuildRequires: glib2-devel >= 2.0.1, pango-devel >= 1.0.1, atk-devel >= 1.0.1, gtk2-devel >= 2.0.1, libxml2-devel >= 2.4.19, gdk-pixbuf-devel, XFree86-devel >= 4.1.0
+AutoReqProv: no
+
+%description -n gtkrasta
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+
+%package -n rasta-tools
+Summary: Extra tools for the RASTA system
+Copyright: GPL
+Group: Applications/File
+Requires: librasta >= %{version}, glib2 >= 2.0.1, libxml2 >= 2.4.19
+BuildRequires: glib2-devel >= 2.0.1, libxml2-devel >= 2.4.19
+AutoReqProv: no
+
+%description -n rasta-tools
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+
+%if 0
+%package -n rasta-doc
+Summary: Documentation for the RASTA system
+Copyright: GPL
+Group: Applications/File
+AutoReqProv: no
+
+%description -n rasta-doc
+RASTA is a system for template driven menus and actions.  It uses a
+common description file to define choices, questions, and actions.  It
+provides a consistent interface to these tasks, allowing for all the
+benefits therein.
+%endif
+
+%prep
+%setup
+#%patch001 -p1
+
+%build
+%configure
+make CFLAGS="-O2 -g -Wall"
+#make docs
+
+%install
+make DESTDIR="$RPM_BUILD_ROOT" install
+
+%clean
+rm -rf "$RPM_BUILD_ROOT"
+
+%files -n librasta
+%defattr(-,root,root)
+%ifarch x86_64
+/usr/lib64/librasta*.so.*
+%else
+/usr/lib/librasta*.so.*
+%endif
+/usr/share/rasta/rasta-*/rasta.dtd
+/usr/share/rasta/rasta-*/rastastate.dtd
+
+%files -n librasta-devel
+%defattr(-,root,root)
+%ifarch x86_64
+/usr/lib64/*.a
+/usr/lib64/*.so
+/usr/lib64/*.la
+/usr/lib64/pkgconfig/*.pc
+%else
+/usr/lib/*.a
+/usr/lib/*.so
+/usr/lib/*.la
+/usr/lib/pkgconfig/*.pc
+%endif
+/usr/include/
+
+%files -n clrasta
+%defattr(-,root,root)
+/usr/bin/clrasta
+%{_mandir}/man1/clrasta.1.gz
+
+%files -n gtkrasta
+%defattr(-,root,root)
+/usr/bin/gtkrasta
+%{_mandir}/man1/gtkrasta.1.gz
+
+%files -n rasta-tools
+%defattr(-,root,root)
+/usr/bin/rastaadd
+/usr/bin/rastadel
+/usr/share/rasta/rasta-*/rastamodify.dtd
+%{_mandir}/man1/rastaadd.1.gz
+%{_mandir}/man1/rastadel.1.gz
+
+%if 0 
+%files -n rasta-doc
+%defattr(-,root,root)
+%doc README
+%doc documentation/reference.tex
+%doc documentation/reference/
+%doc documentation/whitepaper.tex
+%doc documentation/whitepaper/
+%endif
+

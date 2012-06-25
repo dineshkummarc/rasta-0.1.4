@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTASTATE
+  SYSTEM "file:@DTD_LOCATION@/rastastate.dtd" >
+<RASTASTATE xmlns="http://www.jlbec.org/rasta/rasta-0">
+  <SCOPE NAME='top'>
+    <SYMBOL NAME='name' VALUE='avalue'/>
+    <SCOPE NAME='bob'>
+      <SCOPE NAME='sue'>
+        <SYMBOL NAME='sharon' VALUE='bvalue'/>
+        <SYMBOL NAME='tilly' VALUE='bvalue'/>
+      </SCOPE>
+    </SCOPE>
+  </SCOPE>
+</RASTASTATE>

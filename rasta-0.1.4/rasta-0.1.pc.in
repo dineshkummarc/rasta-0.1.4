@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+rasta_file=@RASTA_DIR@/system.rasta
+rasta_dtd=@DTD_LOCATION@/rasta.dtd
+
+Name: Rasta
+Description: Rasta Backend Library
+Version: @VERSION@
+Requires: glib-2.0,libxml-2.0
+Libs: -L${libdir} -lrasta 
+Cflags: -I${includedir}/rasta-@LT_RELEASE@

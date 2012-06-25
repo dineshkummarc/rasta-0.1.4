@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<!DOCTYPE RASTAMODIFY
+  SYSTEM "file:@DTD_LOCATION@/rastamodify.dtd" >
+<RASTAMODIFY xmlns="http://www.jlbec.org/rasta/rasta-0">
+    <SCREENDELETE ID='top2'/>
+    <SCREENDELETE ID='top3'/>
+    <PATHDELETE PATH="/top/manage_devices/top2"/>
+    <PATHDELETE PATH="/top/manage_devices/top3"/>
+    <PATHDELETE PATH="/top/manage_devices/manage_users"/>
+</RASTAMODIFY>

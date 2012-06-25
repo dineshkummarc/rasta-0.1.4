@@ -1,0 +1,88 @@
+Source: rasta
+Section: admin
+Priority: optional
+Maintainer: Joel Becker <jlbec@evilplan.org>
+Standards-Version: 3.5.6
+Build-Depends: libglib2.0-dev (>= 2.0.1), libgtk2.0-dev (>= 2.0.2), libxml2-dev (>= 2.4.19), xlibs-dev, libreadline4-dev, awk, debhelper (>= 3.0.5)
+
+Package: librasta-dev
+Architecture: any
+Section: devel
+Depends: librasta (= ${Source-Version}), libglib2.0-dev, libxml2-dev, pkg-config
+Conflicts:
+Description: Development files for RASTA
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
+Package: librasta
+Architecture: any
+Depends: ${shlibs:Depends}
+Section: libs
+Conflicts:
+Suggests: rasta-tools
+Description: The RASTA system libraries
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
+Package: clrasta
+Architecture: any
+Depends: ${shlibs:Depends}
+Section: admin
+Provides: rasta-frontend
+Conflicts:
+Description: Command-line frontend to the RASTA system
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
+Package: cgirasta
+Architecture: any
+Depends: ${shlibs:Depends}
+Section: web
+Provides: rasta-frontend
+Conflicts:
+Description: CGI frontend to the RASTA system
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
+Package: gtkrasta
+Architecture: any
+Depends: ${shlibs:Depends}
+Section: admin
+Provides: rasta-frontend
+Conflicts:
+Description: GTK+ frontend to the RASTA system
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
+Package: rasta-doc
+Architecture: all
+Depends:
+Section: doc
+Conflicts:
+Description: Documentation for the RASTA system
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
+Package: rasta-tools
+Architecture: any
+Depends: ${shlibs:Depends}
+Section: utils
+Conflicts:
+Description: Extra tools for the RASTA system
+ RASTA is a system for template driven menus and actions.  It uses a
+ common description file to define choices, questions, and actions.  It
+ provides a consistent interface to these tasks, allowing for all the
+ benefits therein.
+
